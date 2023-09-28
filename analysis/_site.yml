@@ -1,7 +1,7 @@
-name: "MIRAGE_application"
+name: MIRAGE_application
 output_dir: ../docs
 navbar:
-  title: "MIRAGE_application"
+  title: MIRAGE_application
   left:
   - text: Home
     href: index.html
@@ -9,6 +9,10 @@ navbar:
     href: about.html
   - text: License
     href: license.html
+  right:
+  - icon: fab fa-github
+    text: Source code
+    href: https://github.com/han16/MIRAGE_application
 output:
   workflowr::wflow_html:
     toc: yes

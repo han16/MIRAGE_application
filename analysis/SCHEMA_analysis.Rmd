@@ -4,26 +4,51 @@ output: html_document
 date: "2023-09-28"
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+
+```{r, echo=F, warning=F, message=F}
+rm(list=ls())
+set.seed(123)
+library(knitr)
+library(RSQLite)
+library(dplyr)
+library(knitr)
+knitr::opts_chunk$set(cache = TRUE, warning = FALSE, 
+                      message = FALSE, cache.lazy = FALSE) # avoid error of long vectors https://stackoverflow.com/questions/39417003/long-vectors-not-supported-yet-error-in-rmd-but-not-in-r-script 
+library(kableExtra)
+library(RColorBrewer)
+library(gplots)
+library(tidyverse)
+library(gridExtra)
+library(ggpubr)
+library(DT)
+#library("devtools")
+#install.packages("Rtools")
+#install_github('xinhe-lab/mirage')
+library(mirage)
+
 ```
 
-## R Markdown
+[SCHEMA](https://schema.broadinstitute.org/)
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r, echo=F, message=F, warning=F,cache=T}
+SCHEMA_data=as_tibble(read.table("C:\\han\\Dataset\\SCHEMA\\SCHEMA_variant_results.tsv.subset", header=T))
 ```
 
-## Including Plots
+## synonymous mutations 
 
-You can also embed plots, for example:
+```{r, echo=F, message=F, warning=F}
+SCHEMA_syn=SCHEMA_data %>% filter(consequence=="synonymous_variant") 
+# what are ac_case, ac_ctrl, an_case, an_ctrl? 
+# ac_case: allle count in case; ac_ctrl: allele count in control; an_case: allele number in case; an_ctrl: allele number in control #  see details here: https://schema.broadinstitute.org/gene/ENSG00000055130; move cursor to the variables then their meanings will pop up  
 
-```{r pressure, echo=FALSE}
-plot(pressure)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## gene CUL1
+
+```{r, echo=F, message=F, warning=F}
+CUL1=SCHEMA_data %>% filter(gene_id=="ENSG00000055130" & consequence!="synonymous_variant") # https://schema.broadinstitute.org/gene/ENSG00000055130
+
+#CUL1 %>% filter(locus=="7:148427164") # zoom in this single variant here https://schema.broadinstitute.org/gene/ENSG00000055130
+#to know:  (genome): AFR(genomes); (exomes): EUR(exomes); the third one is meta; 
+```
+

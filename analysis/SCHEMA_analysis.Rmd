@@ -34,7 +34,7 @@ library(mirage)
 SCHEMA_data=as_tibble(read.table("C:\\han\\Dataset\\SCHEMA\\SCHEMA_variant_results.tsv.subset", header=T))
 ```
 
-## synonymous mutations 
+## Replicate Extended Data Fig 2  
 
 ```{r, echo=F, message=F, warning=F}
 MAC_threshold=5 # this cutoff is used in SCHEMA paper 
@@ -62,16 +62,19 @@ num_variant=nrow(SCHEMA_syn)
 ac_case_total=sum(SCHEMA_syn$ac_case)
 ac_ctrl_total=sum(SCHEMA_syn$ac_ctrl)
 #num_case=24248; num_ctrl=46885 # numbers from from Fig 1a https://www.nature.com/articles/s41586-022-04556-w#Sec15
-num_case=24248; num_ctrl=50437 # numbers from Table S2
+#num_case=24248; num_ctrl=50437 # numbers from Table S2
 #there are 50437 internal control and 46885 gnomAD controls   
-#num_case=22444; num_ctrl=39837  # mumbers from Fig 1c. 
+num_case=22444; num_ctrl=39837  # mumbers from Fig 1c, from the same population, see Section-Statistical approach in suppl 
 variant_count=matrix(c(ac_case_total, ac_ctrl_total,(num_case*2*num_variant-ac_case_total),  (num_ctrl*2*num_variant-ac_ctrl_total)), nrow=2)
 variant_count[1,1]/sum(variant_count[1,])/(variant_count[2,1]/(sum(variant_count[2,])))
 
 variant_count=matrix(c(ac_case_total, ac_ctrl_total,(num_case*num_variant-ac_case_total),  (num_ctrl*num_variant-ac_ctrl_total)), nrow=2)
 variant_count[1,1]/sum(variant_count[1,])/(variant_count[2,1]/(sum(variant_count[2,])))
 
-fisher.test(matrix(c(ac_case_total, ac_ctrl_total,(num_case*2*num_variant-ac_case_total),  (num_ctrl*2*num_variant-ac_ctrl_total)), nrow=2))
+#fisher.test(matrix(c(ac_case_total, ac_ctrl_total,(num_case*2*num_variant-ac_case_total),  (num_ctrl*2*num_variant-ac_ctrl_total)), nrow=2))
+############################ 
+
+
 
 ```
 

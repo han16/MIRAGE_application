@@ -55,7 +55,7 @@ SCHEMA_syn=SCHEMA_data %>% filter(consequence=="synonymous_variant" & ac_case<=M
 ############### overall Burden of syn mutations 
 SCHEMA_syn$ac_case=as.numeric(SCHEMA_syn$ac_case) # convert into numeric value 
 SCHEMA_syn$ac_ctrl=as.numeric(SCHEMA_syn$ac_ctrl)
-SCHEMA_syn=SCHEMA_syn[complete.cases(SCHEMA_syn$ac_case),] # row rows when either ac_case or ac_ctrl has NA 
+SCHEMA_syn=SCHEMA_syn[complete.cases(SCHEMA_syn$ac_case),] # remove rows when either ac_case or ac_ctrl has NA 
 SCHEMA_syn=SCHEMA_syn[complete.cases(SCHEMA_syn$ac_ctrl),]
 
 num_variant=nrow(SCHEMA_syn)
@@ -73,8 +73,12 @@ variant_count[1,1]/sum(variant_count[1,])/(variant_count[2,1]/(sum(variant_count
 
 #fisher.test(matrix(c(ac_case_total, ac_ctrl_total,(num_case*2*num_variant-ac_case_total),  (num_ctrl*2*num_variant-ac_ctrl_total)), nrow=2))
 ############################ 
-
-
+#we considered frameshift, stop gained, splice acceptor
+#and donor variants as putative protein-truncating (or loss-of-function) variants, so LoF and PTV have the same definition. 
+LoF=SCHEMA_data %>% filter(consequence=="frameshift_variant" | consequence=="stop_gained" |consequence=="splice_acceptor_variant" | consequence=="splice_donor_variant")
+ac_case_total=sum(as.numeric(LoF$ac_case), na.rm=T); ac_ctrl_total=sum(as.numeric(LoF$ac_ctrl), na.rm=T)
+variant_count=matrix(c(ac_case_total, ac_ctrl_total,(num_case*num_variant-ac_case_total),  (num_ctrl*num_variant-ac_ctrl_total)), nrow=2)
+variant_count[1,1]/sum(variant_count[1,])/(variant_count[2,1]/(sum(variant_count[2,])))
 
 ```
 

@@ -37,7 +37,7 @@ SCHEMA_data=as_tibble(read.table("C:\\han\\Dataset\\SCHEMA\\SCHEMA_variant_resul
 ## Replicate Extended Data Fig 2  
 
 ```{r, echo=F, message=F, warning=F}
-MAC_threshold=5 # this cutoff is used in SCHEMA paper 
+MAC_threshold=5 # this cutoff is used in SCHEMA paper in Section Analysis approach  
 SCHEMA_syn=SCHEMA_data %>% filter(consequence=="synonymous_variant" & ac_case<=MAC_threshold & ac_ctrl<=MAC_threshold) 
 
 ##############
@@ -65,20 +65,16 @@ ac_ctrl_total=sum(SCHEMA_syn$ac_ctrl)
 #num_case=24248; num_ctrl=50437 # numbers from Table S2
 #there are 50437 internal control and 46885 gnomAD controls   
 num_case=22444; num_ctrl=39837  # mumbers from Fig 1c, from the same population, see Section-Statistical approach in suppl 
-variant_count=matrix(c(ac_case_total, ac_ctrl_total,(num_case*2*num_variant-ac_case_total),  (num_ctrl*2*num_variant-ac_ctrl_total)), nrow=2)
-variant_count[1,1]/sum(variant_count[1,])/(variant_count[2,1]/(sum(variant_count[2,])))
 
-variant_count=matrix(c(ac_case_total, ac_ctrl_total,(num_case*num_variant-ac_case_total),  (num_ctrl*num_variant-ac_ctrl_total)), nrow=2)
-variant_count[1,1]/sum(variant_count[1,])/(variant_count[2,1]/(sum(variant_count[2,])))
-
-#fisher.test(matrix(c(ac_case_total, ac_ctrl_total,(num_case*2*num_variant-ac_case_total),  (num_ctrl*2*num_variant-ac_ctrl_total)), nrow=2))
 ############################ 
+OR=numeric(); OR_lower=numeric(); OR_upper=numeric()
 #we considered frameshift, stop gained, splice acceptor
 #and donor variants as putative protein-truncating (or loss-of-function) variants, so LoF and PTV have the same definition. 
 LoF=SCHEMA_data %>% filter(consequence=="frameshift_variant" | consequence=="stop_gained" |consequence=="splice_acceptor_variant" | consequence=="splice_donor_variant")
 ac_case_total=sum(as.numeric(LoF$ac_case), na.rm=T); ac_ctrl_total=sum(as.numeric(LoF$ac_ctrl), na.rm=T)
-variant_count=matrix(c(ac_case_total, ac_ctrl_total,(num_case*num_variant-ac_case_total),  (num_ctrl*num_variant-ac_ctrl_total)), nrow=2)
-variant_count[1,1]/sum(variant_count[1,])/(variant_count[2,1]/(sum(variant_count[2,])))
+burden_test=fisher.test(matrix(c(ac_case_total,num_case, ac_ctrl_total, num_ctrl), nrow=2))
+OR[1]=burden_test$estimate; OR_lower[1]=burden_test$conf.int[1]; OR_upper[1]=burden_test$conf.int[2]
+
 
 ```
 

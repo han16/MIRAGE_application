@@ -31,18 +31,24 @@ library(mirage)
 [SCHEMA](https://schema.broadinstitute.org/)
 
 ```{r, echo=F, message=F, warning=F,cache=T}
-SCHEMA_data=as_tibble(read.table("C:\\han\\Dataset\\SCHEMA\\SCHEMA_variant_results.tsv.subset", header=T))
+SCHEMA_data=as_tibble(read.table("C:\\han\\Dataset\\SCHEMA\\SCHEMA_variant_results_subset_20231016.tsv", header=T))
 ```
 
 ## Replicate Extended Data Fig 2  
 
 ```{r, echo=F, message=F, warning=F}
+#################### population groups
+unique(SCHEMA_data$group)
+
+############ convert into numeric values 
+SCHEMA_data$ac_case=as.numeric(SCHEMA_data$ac_case)
+SCHEMA_data$ac_ctrl=as.numeric(SCHEMA_data$ac_ctrl)
+
+############ minor allele count filter 
 MAC_threshold=5 # this cutoff is used in SCHEMA paper in Section Analysis approach  
-SCHEMA_syn=SCHEMA_data %>% filter(consequence=="synonymous_variant" & ac_case<=MAC_threshold & ac_ctrl<=MAC_threshold) 
+SCHEMA_syn=SCHEMA_data %>% filter(group =="meta" & consequence=="synonymous_variant" & ac_case<=MAC_threshold & ac_ctrl<=MAC_threshold) 
 
 ##############
-#SCHEMA_syn$ac_case=as.numeric(SCHEMA_syn$ac_case)
-#SCHEMA_syn$ac_ctrl=as.numeric(SCHEMA_syn$ac_ctrl)
 # what are ac_case, ac_ctrl, an_case, an_ctrl? 
 # ac_case: allle count in case; ac_ctrl: allele count in control; an_case: allele number in case; an_ctrl: allele number in control #  see details here: https://schema.broadinstitute.org/gene/ENSG00000055130; move cursor to the variables then their meanings will pop up  
 
@@ -53,10 +59,10 @@ SCHEMA_syn=SCHEMA_data %>% filter(consequence=="synonymous_variant" & ac_case<=M
 #SCHEMA_syn %>% filter(ac_case=="48587") from here, SCHEMA data doesn't use AF filter. 
 
 ############### overall Burden of syn mutations 
-SCHEMA_syn$ac_case=as.numeric(SCHEMA_syn$ac_case) # convert into numeric value 
-SCHEMA_syn$ac_ctrl=as.numeric(SCHEMA_syn$ac_ctrl)
-SCHEMA_syn=SCHEMA_syn[complete.cases(SCHEMA_syn$ac_case),] # remove rows when either ac_case or ac_ctrl has NA 
-SCHEMA_syn=SCHEMA_syn[complete.cases(SCHEMA_syn$ac_ctrl),]
+#SCHEMA_syn$ac_case=as.numeric(SCHEMA_syn$ac_case) # convert into numeric value 
+#SCHEMA_syn$ac_ctrl=as.numeric(SCHEMA_syn$ac_ctrl)
+#SCHEMA_syn=SCHEMA_syn[complete.cases(SCHEMA_syn$ac_case),] # remove rows when either ac_case or ac_ctrl has NA 
+#SCHEMA_syn=SCHEMA_syn[complete.cases(SCHEMA_syn$ac_ctrl),]
 
 num_variant=nrow(SCHEMA_syn)
 ac_case_total=sum(SCHEMA_syn$ac_case)

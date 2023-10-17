@@ -26,6 +26,21 @@ library(DT)
 #install_github('xinhe-lab/mirage')
 library(mirage)
 
+multiplesheets <- function(fname) {
+   
+  # getting info about all excel sheets
+  sheets <- readxl::excel_sheets(fname)
+  tibble <- lapply(sheets, function(x) readxl::read_excel(fname, sheet = x))
+  data_frame <- lapply(tibble, as.data.frame)
+    
+  # assigning names to data frames
+  names(data_frame) <- sheets
+    
+  # print data frame
+  print(data_frame)
+}
+
+
 ```
 
 [SCHEMA](https://schema.broadinstitute.org/)
@@ -33,6 +48,19 @@ library(mirage)
 ```{r, echo=F, message=F, warning=F,cache=T}
 SCHEMA_data=as_tibble(read.table("C:\\han\\Dataset\\SCHEMA\\SCHEMA_variant_results_subset_20231016.tsv", header=T))
 ```
+
+## Replicate Extended Data Fig 1
+
+```{r, echo=F, message=F, warning=F, results=F}
+Table13=multiplesheets("../../../../Dataset/20231017_PMID_27535533/Lek 2016 suppl table/nature19057-s2/nature19057-SI Table 13.xlsx")
+
+```
+
+```{r, echo=F, message=F, warning=F}
+LoF_intolerant=Table13$`LoF Intolerant`
+
+```
+
 
 ## Replicate Extended Data Fig 2  
 

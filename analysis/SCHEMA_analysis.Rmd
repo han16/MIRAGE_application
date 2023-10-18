@@ -54,11 +54,13 @@ SCHEMA_data=as_tibble(read.table("C:\\han\\Dataset\\SCHEMA\\SCHEMA_variant_resul
 ```{r, echo=F, message=F, warning=F, results=F}
 Table13=multiplesheets("../../../../Dataset/20231017_PMID_27535533/Lek 2016 suppl table/nature19057-s2/nature19057-SI Table 13.xlsx")
 
+suppl_table11=read.table(gzfile("../../../../Dataset/20231018_PMID_32461654/41586_2020_2308_MOESM4_ESM/supplement/supplementary_dataset_11_full_constraint_metrics.tsv.gz"),fill = TRUE , header = TRUE ) # read into gz file 
+# length(unique(suppl_table11 %>% filter(pLI>0.9) %>% select(gene) %>%pull)) 3476 genes with pLI>0.9 
 ```
 
 ```{r, echo=F, message=F, warning=F}
 LoF_intolerant=Table13$`LoF Intolerant`
-
+# length(unique(LoF_intolerant %>% filter(pLI>0.9) %>% (gene) %>% pull)) # 3230 genes with pLI>0.9, consistent with the number reported in paper Lek2017_Nature   
 ```
 
 

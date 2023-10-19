@@ -60,7 +60,32 @@ suppl_table11=read.table(gzfile("../../../../Dataset/20231018_PMID_32461654/4158
 
 ```{r, echo=F, message=F, warning=F}
 LoF_intolerant=Table13$`LoF Intolerant`
-# length(unique(LoF_intolerant %>% filter(pLI>0.9) %>% (gene) %>% pull)) # 3230 genes with pLI>0.9, consistent with the number reported in paper Lek2017_Nature   
+# length(unique(LoF_intolerant %>% filter(pLI>0.9) %>% (gene) %>% pull)) # 3230 genes with pLI>0.9, consistent with the number reported in paper Lek2017_Nature 
+
+LoF_intolerant_gene=unique(suppl_table11 %>% filter(pLI>0.9) %>% select(gene) %>%pull) 
+LoF_intolerant_gene_id=suppl_table11 %>% filter(gene==LoF_intolerant_gene) %>% select(gene_id) %>% pull
+
+cohorts=c("meta","UK_Ireland_EUR", "Swedish_EUR",  "Danish_EUR", "UK10K_NFBC_FINRISK_FIN", "UK10K_INTERVAL_EUR", "GPC_Latino_AMR", "GPC_McLean_EUR", "GPC_genomes_AFR", "ASJ",  "EAS", "EST", "Bulgarian_EUR", "FIN", "GPC_genomes_EUR", "Swedish_FIN", "GPC_genomes_AMR")
+PTV_definition=c("frameshift_variant", "stop_gained", "splice_acceptor_variant","splice_donor_variant" )
+odds_ratio_summary_ptv=matrix(nrow=length(cohorts), ncol=5)
+odds_ratio_summary_syn=matrix(nrow=length(cohorts), ncol=5)
+num_case=22444; num_ctrl=39837
+
+MAC_threshold=5 # this cutoff is used in SCHEMA paper in Section Analysis approach
+#for (i in 1:length(cohorts))
+{
+  i=2
+  cohort_ptv=SCHEMA_data %>% filter(consequence %in% PTV_definition==T & group==cohorts[i] & ac_case<=MAC_threshold & ac_ctrl<=MAC_threshold)
+  cohort_syn=SCHEMA_data %>% filter(consequence== "synonymous_variant" & group==cohorts[i] & ac_case<=MAC_threshold & ac_ctrl<=MAC_threshold)
+  
+  ptv_burden_test=fisher.test(matrix(c(sum(cohort_ptv$ac_case),num_case,  sum(cohort_ptv$ac_ctrl), num_ctrl), nrow=2))
+  syn_burden_test=fisher.test(matrix(c(sum(cohort_syn$ac_case),num_case,  sum(cohort_syn$ac_ctrl), num_ctrl), nrow=2))
+  
+  odds_ratio_summary_ptv[i,]=c(sum(cohort_ptv$ac_case), sum(cohort_ptv$ac_ctrl), ptv_burden_test$estimate, ptv_burden_test$conf.int[1], ptv_burden_test$conf.int[2])
+  odds_ratio_summary_syn[i,]=c(sum(cohort_syn$ac_case), sum(cohort_syn$ac_ctrl), syn_burden_test$estimate, syn_burden_test$conf.int[1], syn_burden_test$conf.int[2])
+}
+rownames(odds_ratio_summary_ptv)=cohorts
+rownames(odds_ratio_summary_syn)=cohorts
 ```
 
 

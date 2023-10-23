@@ -49,6 +49,34 @@ multiplesheets <- function(fname) {
 SCHEMA_data=as_tibble(read.table("C:\\han\\Dataset\\SCHEMA\\SCHEMA_variant_results_subset_20231016.tsv", header=T))
 ```
 
+
+```{r, echo=F, message=F, warning=F}
+# Conversion of Gene Name to Ensembl ID https://www.biostars.org/p/430015/
+
+# install package biomaRT
+#if (!require("BiocManager", quietly = TRUE))
+#    install.packages("BiocManager")
+
+#BiocManager::install("biomaRt")
+
+library(biomaRt)
+mart <- useMart('ENSEMBL_MART_ENSEMBL')
+mart <- useDataset('hsapiens_gene_ensembl', mart)
+
+annotLookup <- getBM(
+  mart = mart,
+  attributes = c(
+    'hgnc_symbol',
+    'ensembl_gene_id',
+    'gene_biotype'),
+  uniqueRows = TRUE)
+colnames(annotLookup)[2]="gene_id"
+
+SCHEMA_data_with_hgnc_symbol=right_join(annotLookup, SCHEMA_data, by="gene_id") 
+```
+
+
+
 ## Replicate Extended Data Fig 1
 
 ```{r, echo=F, message=F, warning=F, results=F}
@@ -62,8 +90,7 @@ suppl_table11=read.table(gzfile("../../../../Dataset/20231018_PMID_32461654/4158
 LoF_intolerant=Table13$`LoF Intolerant`
 # length(unique(LoF_intolerant %>% filter(pLI>0.9) %>% (gene) %>% pull)) # 3230 genes with pLI>0.9, consistent with the number reported in paper Lek2017_Nature 
 
-LoF_intolerant_gene=unique(suppl_table11 %>% filter(pLI>0.9) %>% select(gene) %>%pull) 
-LoF_intolerant_gene_id=suppl_table11 %>% filter(gene==LoF_intolerant_gene) %>% select(gene_id) %>% pull
+LoF_intolerant_gene=unique(suppl_table11 %>% filter(pLI>0.9) %>% dplyr::select(gene) %>%pull) 
 
 cohorts=c("meta","UK_Ireland_EUR", "Swedish_EUR",  "Danish_EUR", "UK10K_NFBC_FINRISK_FIN", "UK10K_INTERVAL_EUR", "GPC_Latino_AMR", "GPC_McLean_EUR", "GPC_genomes_AFR", "ASJ",  "EAS", "EST", "Bulgarian_EUR", "FIN", "GPC_genomes_EUR", "Swedish_FIN", "GPC_genomes_AMR")
 PTV_definition=c("frameshift_variant", "stop_gained", "splice_acceptor_variant","splice_donor_variant" )
@@ -75,8 +102,8 @@ MAC_threshold=5 # this cutoff is used in SCHEMA paper in Section Analysis approa
 #for (i in 1:length(cohorts))
 {
   i=2
-  cohort_ptv=SCHEMA_data %>% filter(consequence %in% PTV_definition==T & group==cohorts[i] & ac_case<=MAC_threshold & ac_ctrl<=MAC_threshold)
-  cohort_syn=SCHEMA_data %>% filter(consequence== "synonymous_variant" & group==cohorts[i] & ac_case<=MAC_threshold & ac_ctrl<=MAC_threshold)
+  cohort_ptv=SCHEMA_data_with_hgnc_symbol %>% filter(hgnc_symbol %in%LoF_intolerant_gene==T &  consequence %in% PTV_definition==T & group==cohorts[i] & ac_case<=MAC_threshold & ac_ctrl<=MAC_threshold)
+  cohort_syn=SCHEMA_data_with_hgnc_symbol %>% filter(hgnc_symbol %in%LoF_intolerant_gene==T &  consequence== "synonymous_variant" & group==cohorts[i] & ac_case<=MAC_threshold & ac_ctrl<=MAC_threshold)
   
   ptv_burden_test=fisher.test(matrix(c(sum(cohort_ptv$ac_case),num_case,  sum(cohort_ptv$ac_ctrl), num_ctrl), nrow=2))
   syn_burden_test=fisher.test(matrix(c(sum(cohort_syn$ac_case),num_case,  sum(cohort_syn$ac_ctrl), num_ctrl), nrow=2))

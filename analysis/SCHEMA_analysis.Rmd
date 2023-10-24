@@ -72,7 +72,7 @@ annotLookup <- getBM(
   uniqueRows = TRUE)
 colnames(annotLookup)[2]="gene_id"
 
-SCHEMA_data_with_hgnc_symbol=right_join(annotLookup, SCHEMA_data, by="gene_id") 
+SCHEMA_data_with_hgnc_symbol=as_tibble(right_join(annotLookup, SCHEMA_data, by="gene_id")) 
 ```
 
 
@@ -80,11 +80,17 @@ SCHEMA_data_with_hgnc_symbol=right_join(annotLookup, SCHEMA_data, by="gene_id")
 ## Replicate Extended Data Fig 1
 
 ```{r, echo=F, message=F, warning=F, results=F}
-Table13=multiplesheets("../../../../Dataset/20231017_PMID_27535533/Lek 2016 suppl table/nature19057-s2/nature19057-SI Table 13.xlsx")
 
-suppl_table11=read.table(gzfile("../../../../Dataset/20231018_PMID_32461654/41586_2020_2308_MOESM4_ESM/supplement/supplementary_dataset_11_full_constraint_metrics.tsv.gz"),fill = TRUE , header = TRUE ) # read into gz file 
+Table13=multiplesheets("C:/han/Dataset/20231017_PMID_27535533/Lek 2016 suppl table/nature19057-s2/nature19057-SI Table 13.xlsx")
+
+
+#suppl_table11=read.table(gzfile("../../../../Dataset/20231018_PMID_32461654/41586_2020_2308_MOESM4_ESM/supplement/supplementary_dataset_11_full_constraint_metrics.tsv.gz"),fill = TRUE , header = TRUE ) # read into gz file 
 # length(unique(suppl_table11 %>% filter(pLI>0.9) %>% select(gene) %>%pull)) 3476 genes with pLI>0.9 
+suppl_table11=read.table(gzfile("C:/han/Dataset/20231018_PMID_32461654/41586_2020_2308_MOESM4_ESM/supplement/supplementary_dataset_11_full_constraint_metrics.tsv.gz"),fill = TRUE , header = TRUE ) # read into gz file
 ```
+
+
+
 
 ```{r, echo=F, message=F, warning=F}
 LoF_intolerant=Table13$`LoF Intolerant`
@@ -99,9 +105,11 @@ odds_ratio_summary_syn=matrix(nrow=length(cohorts), ncol=5)
 num_case=22444; num_ctrl=39837
 
 MAC_threshold=5 # this cutoff is used in SCHEMA paper in Section Analysis approach
-#for (i in 1:length(cohorts))
+SCHEMA_data_with_hgnc_symbol$ac_case=as.numeric(SCHEMA_data_with_hgnc_symbol$ac_case) # convert into numeric to be applicable to MAC filter 
+SCHEMA_data_with_hgnc_symbol$ac_ctrl=as.numeric(SCHEMA_data_with_hgnc_symbol$ac_ctrl)
+for (i in 1:length(cohorts))
 {
-  i=2
+#  i=1
   cohort_ptv=SCHEMA_data_with_hgnc_symbol %>% filter(hgnc_symbol %in%LoF_intolerant_gene==T &  consequence %in% PTV_definition==T & group==cohorts[i] & ac_case<=MAC_threshold & ac_ctrl<=MAC_threshold)
   cohort_syn=SCHEMA_data_with_hgnc_symbol %>% filter(hgnc_symbol %in%LoF_intolerant_gene==T &  consequence== "synonymous_variant" & group==cohorts[i] & ac_case<=MAC_threshold & ac_ctrl<=MAC_threshold)
   
@@ -111,8 +119,10 @@ MAC_threshold=5 # this cutoff is used in SCHEMA paper in Section Analysis approa
   odds_ratio_summary_ptv[i,]=c(sum(cohort_ptv$ac_case), sum(cohort_ptv$ac_ctrl), ptv_burden_test$estimate, ptv_burden_test$conf.int[1], ptv_burden_test$conf.int[2])
   odds_ratio_summary_syn[i,]=c(sum(cohort_syn$ac_case), sum(cohort_syn$ac_ctrl), syn_burden_test$estimate, syn_burden_test$conf.int[1], syn_burden_test$conf.int[2])
 }
-rownames(odds_ratio_summary_ptv)=cohorts
-rownames(odds_ratio_summary_syn)=cohorts
+rownames(odds_ratio_summary_ptv)=cohorts; colnames(odds_ratio_summary_ptv)=c("ac_case", "ac_ctrl", "OR", "CI_low", "CI_upper")
+rownames(odds_ratio_summary_syn)=cohorts; colnames(odds_ratio_summary_syn)=c("ac_case", "ac_ctrl", "OR", "CI_low", "CI_upper")
+odds_ratio_summary_ptv
+odds_ratio_summary_syn
 ```
 
 

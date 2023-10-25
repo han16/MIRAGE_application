@@ -46,7 +46,7 @@ multiplesheets <- function(fname) {
 [SCHEMA](https://schema.broadinstitute.org/)
 
 ```{r, echo=F, message=F, warning=F,cache=T}
-SCHEMA_data=as_tibble(read.table("C:\\han\\Dataset\\SCHEMA\\SCHEMA_variant_results_subset_20231016.tsv", header=T))
+SCHEMA_data=as_tibble(read.table("C:\\han\\Dataset\\SCHEMA\\SCHEMA_variant_results_subset_20231025.tsv", header=T))
 ```
 
 
@@ -184,4 +184,28 @@ CUL1=SCHEMA_data %>% filter(gene_id=="ENSG00000055130" & consequence!="synonymou
 #CUL1 %>% filter(locus=="7:148427164") # zoom in this single variant here https://schema.broadinstitute.org/gene/ENSG00000055130
 #to know:  (genome): AFR(genomes); (exomes): EUR(exomes); the third one is meta; 
 ```
+
+
+
+## Run MIRAGE on meta case control sample 
+
+```{r, echo=F, message=F, warning=F, eval=F}
+SCHEMA_data_with_hgnc_symbol$ac_case=as.numeric(SCHEMA_data_with_hgnc_symbol$ac_case)  # convert into numeric values 
+SCHEMA_data_with_hgnc_symbol$ac_ctrl=as.numeric(SCHEMA_data_with_hgnc_symbol$ac_ctrl)
+
+meta_data=SCHEMA_data_with_hgnc_symbol %>% filter(group=="meta" & ac_case<=MAC_threshold & ac_ctrl<=MAC_threshold & hgnc_symbol!="") %>% filter(consequence %in% PTV_definition==T | consequence=="missense_variant_mpc_>=3" | consequence=="missense_variant_mpc_2-3") %>% dplyr::select(hgnc_symbol, locus, ac_case, ac_ctrl, n_denovos, consequence)
+meta_data$n_denovos[is.na(meta_data$n_denovos)]=0 # replace NA with zero  
+ac_case_actual=meta_data$ac_case-meta_data$n_denovos # this is actual number of allele counts in cases # see here https://schema.broadinstitute.org/gene/ENSG00000099381
+ac_ctrl_actual=meta_data$ac_ctrl
+group_index=numeric()
+group_index[which(meta_data$consequence %in% PTV_definition==T)]=1
+group_index[which(meta_data$consequence=="missense_variant_mpc_>=3")]=2
+group_index[which(meta_data$consequence=="missense_variant_mpc_2-3")]=3
+meta_data_mirage=data.frame(ID=meta_data$locus, gene=meta_data$hgnc_symbol, No.case=ac_ctrl_actual, No.contr=ac_ctrl_actual, group.index=group_index)
+n1=24248; n2=97322 
+res=mirage(meta_data_mirage, n1, n2, gamma=c(9,3,2), sigma=2)
+```
+
+
+
 

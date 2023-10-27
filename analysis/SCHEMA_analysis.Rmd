@@ -262,6 +262,7 @@ ggplot(summary, aes(x=var.group, y=estimate, fill=var.group)) +
   theme(axis.text.x = element_text(angle = 30, vjust = 0.5, size=10))
 ```
 
+
 #### 2 variant groups 
 
 
@@ -287,7 +288,7 @@ res=mirage(meta_data_mirage, n1, n2, gamma=c(3,1))
 #sum(meta_data_mirage %>% filter(gene==check_gene & group.index==3)%>% dplyr::select(No.contr)%>% pull())
 
 ########### save the mirage output 
-#write.csv(res$BF.PP.gene, file="C:\\han\\Dataset\\SCHEMA\\MIRAGE_on_meta_sample_estimate_delta_3vargroups_20231027.csv")
+#write.csv(res$BF.PP.gene, file="C:\\han\\Dataset\\SCHEMA\\MIRAGE_on_meta_sample_estimate_delta_2vargroups_20231027.csv")
 
 ```
 

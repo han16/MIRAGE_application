@@ -215,9 +215,9 @@ sum(meta_data_mirage %>% filter(gene==check_gene & group.index==1)%>% dplyr::sel
 
 ########### save the mirage output 
 #write.csv(res$BF.PP.gene, file="C:\\han\\Dataset\\SCHEMA\\MIRAGE_on_meta_sample_estimate_delta_3vargroups_20231027.csv")
-#res$BF.PP.gene[order(res$BF.PP.gene$BF, decreasing = T),]
 
-meta_data_mirage %>% filter(gene=="TTN")
+#res$BF.PP.gene[order(res$BF.PP.gene$BF, decreasing = T),] # order genes by BF 
+#meta_data_mirage %>% filter(gene=="TTN")
 ```
 
 ### estimate both $\delta$ and $\eta's$

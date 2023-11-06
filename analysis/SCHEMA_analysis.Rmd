@@ -209,13 +209,15 @@ n1=24248; n2=97322
 res=mirage(meta_data_mirage, n1, n2, gamma=1)
 
 ######### given a gene, check the input data with SCHEMA browser https://schema.broadinstitute.org/gene/ENSG00000055130
-#check_gene="XPO7"
-#sum(meta_data_mirage %>% filter(gene==check_gene & group.index==3)%>% dplyr::select(No.case)%>% pull())
-#sum(meta_data_mirage %>% filter(gene==check_gene & group.index==3)%>% dplyr::select(No.contr)%>% pull())
+check_gene="TTN"
+sum(meta_data_mirage %>% filter(gene==check_gene & group.index==1)%>% dplyr::select(No.case)%>% pull())
+sum(meta_data_mirage %>% filter(gene==check_gene & group.index==1)%>% dplyr::select(No.contr)%>% pull())
 
 ########### save the mirage output 
 #write.csv(res$BF.PP.gene, file="C:\\han\\Dataset\\SCHEMA\\MIRAGE_on_meta_sample_estimate_delta_3vargroups_20231027.csv")
+#res$BF.PP.gene[order(res$BF.PP.gene$BF, decreasing = T),]
 
+meta_data_mirage %>% filter(gene=="TTN")
 ```
 
 ### estimate both $\delta$ and $\eta's$
@@ -313,9 +315,9 @@ n1=24248; n2=97322
 res=mirage(meta_data_mirage, n1, n2, gamma=c(3,1))
 
 ######### given a gene, check the input data with SCHEMA browser https://schema.broadinstitute.org/gene/ENSG00000055130
-#check_gene="XPO7"
-#sum(meta_data_mirage %>% filter(gene==check_gene & group.index==3)%>% dplyr::select(No.case)%>% pull())
-#sum(meta_data_mirage %>% filter(gene==check_gene & group.index==3)%>% dplyr::select(No.contr)%>% pull())
+check_gene="SETD1A"
+sum(meta_data_mirage %>% filter(gene==check_gene & group.index==1)%>% dplyr::select(No.case)%>% pull())
+sum(meta_data_mirage %>% filter(gene==check_gene & group.index==1)%>% dplyr::select(No.contr)%>% pull())
 
 ########### save the mirage output 
 #write.csv(res$BF.PP.gene, file="C:\\han\\Dataset\\SCHEMA\\MIRAGE_on_meta_sample_estimate_delta_2vargroups_20231027.csv")

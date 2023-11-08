@@ -41,6 +41,21 @@ multiplesheets <- function(fname) {
   print(data_frame)
 }
 
+pvalue_adjust=function(p_value)
+{
+  p_value_adjust=numeric()
+for (i in 1:length(p_value))
+{
+  if (is.na(p_value[i])==T)
+    p_value_adjust[i]=p_value[i]
+  if (is.na(p_value[i])==F & p_value[i]<1e-10)
+    p_value_adjust[i]="<1e-10"
+  if (is.na(p_value[i])==F & p_value[i]>1e-10)
+    p_value_adjust[i]=round(p_value[i],10)
+}
+  return(p_value_adjust)
+}
+
 ```
 
 [SCHEMA](https://schema.broadinstitute.org/)
@@ -205,13 +220,14 @@ group_index=numeric()
 group_index[which(meta_data$consequence=="synonymous_variant")]=1
 
 meta_data_mirage=data.frame(ID=meta_data$locus, gene=meta_data$hgnc_symbol, No.case=ac_case_actual, No.contr=ac_ctrl_actual, group.index=group_index)
+meta_data_mirage=meta_data_mirage %>% filter(No.contr-No.case<2) # filter out variants with too many allales in control than in case 
 n1=24248; n2=97322 
 res=mirage(meta_data_mirage, n1, n2, gamma=1)
 
 ######### given a gene, check the input data with SCHEMA browser https://schema.broadinstitute.org/gene/ENSG00000055130
-check_gene="TTN"
-sum(meta_data_mirage %>% filter(gene==check_gene & group.index==1)%>% dplyr::select(No.case)%>% pull())
-sum(meta_data_mirage %>% filter(gene==check_gene & group.index==1)%>% dplyr::select(No.contr)%>% pull())
+#check_gene="TTN"
+#sum(meta_data_mirage %>% filter(gene==check_gene & group.index==1)%>% dplyr::select(No.case)%>% pull())
+#sum(meta_data_mirage %>% filter(gene==check_gene & group.index==1)%>% dplyr::select(No.contr)%>% pull())
 
 ########### save the mirage output 
 #write.csv(res$BF.PP.gene, file="C:\\han\\Dataset\\SCHEMA\\MIRAGE_on_meta_sample_estimate_delta_3vargroups_20231027.csv")
@@ -219,6 +235,38 @@ sum(meta_data_mirage %>% filter(gene==check_gene & group.index==1)%>% dplyr::sel
 #res$BF.PP.gene[order(res$BF.PP.gene$BF, decreasing = T),] # order genes by BF 
 #meta_data_mirage %>% filter(gene=="TTN")
 ```
+
+
+```{r, echo=F, message=F, warning=F}
+
+p_value=c(1, 1)
+
+
+mirage_para_est=data.frame(variant_groups=c("delta:proportion of risk genes", "syn" ), parameter_estimate=round(c(0.0003262156,  
+0.001006147),4), p_value=pvalue_adjust(p_value))
+mirage_para_est%>%
+datatable(extensions = 'Buttons',
+            options = list(dom = 'Blfrtip',
+                           buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+                           lengthMenu = list(c(10,25,50,-1),
+                                             c(10,25,50,"All"))))
+
+var_group=c("syn")
+estimate=c(0.001006147)
+summary=data.frame(var.group=var_group, estimate=estimate)
+ggplot(summary, aes(x=var.group, y=estimate, fill=var.group)) + 
+   geom_bar(stat="identity", position=position_dodge())+
+  theme(legend.title=element_blank())+
+  xlab("variant groups")+ylab(expression(paste(hat(eta))))+
+  ylim(c(0,1))+
+  ggtitle("")+
+  theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+  theme(axis.text.x = element_text(angle = 30, vjust = 0.5, size=10))
+```
+
+ * use filter `No.contr-No.case<2` filtering out variants with more alleles in cases than in control 
+
+
 
 ### estimate both $\delta$ and $\eta's$
 
@@ -255,20 +303,7 @@ res=mirage(meta_data_mirage, n1, n2, gamma=c(6,3,1))
 
 
 ```{r, echo=F, message=F, warning=F}
-pvalue_adjust=function(p_value)
-{
-  p_value_adjust=numeric()
-for (i in 1:length(p_value))
-{
-  if (is.na(p_value[i])==T)
-    p_value_adjust[i]=p_value[i]
-  if (is.na(p_value[i])==F & p_value[i]<1e-10)
-    p_value_adjust[i]="<1e-10"
-  if (is.na(p_value[i])==F & p_value[i]>1e-10)
-    p_value_adjust[i]=round(p_value[i],10)
-}
-  return(p_value_adjust)
-}
+
 
 p_value=c(0, 0.000000e+00, 2.030313e-10, 1.000000e+00)
 
@@ -289,6 +324,7 @@ ggplot(summary, aes(x=var.group, y=estimate, fill=var.group)) +
    geom_bar(stat="identity", position=position_dodge())+
   theme(legend.title=element_blank())+
   xlab("variant groups")+ylab(expression(paste(hat(eta))))+
+  ylim(c(0,1))+
   ggtitle("")+
   theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
   theme(axis.text.x = element_text(angle = 30, vjust = 0.5, size=10))
@@ -325,20 +361,6 @@ sum(meta_data_mirage %>% filter(gene==check_gene & group.index==1)%>% dplyr::sel
 ```
 
 ```{r, echo=F, message=F, warning=F}
-pvalue_adjust=function(p_value)
-{
-  p_value_adjust=numeric()
-for (i in 1:length(p_value))
-{
-  if (is.na(p_value[i])==T)
-    p_value_adjust[i]=p_value[i]
-  if (is.na(p_value[i])==F & p_value[i]<1e-10)
-    p_value_adjust[i]="<1e-10"
-  if (is.na(p_value[i])==F & p_value[i]>1e-10)
-    p_value_adjust[i]=round(p_value[i],10)
-}
-  return(p_value_adjust)
-}
 
 p_value=c(0, 0.000000e+00, 1.000000e+00)
 
@@ -359,6 +381,7 @@ ggplot(summary, aes(x=var.group, y=estimate, fill=var.group)) +
    geom_bar(stat="identity", position=position_dodge())+
   theme(legend.title=element_blank())+
   xlab("variant groups")+ylab(expression(paste(hat(eta))))+
+  ylim(c(0,1))+
   ggtitle("")+
   theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
   theme(axis.text.x = element_text(angle = 30, vjust = 0.5, size=10))

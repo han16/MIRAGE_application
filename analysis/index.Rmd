@@ -8,4 +8,14 @@ editor_options:
   chunk_output_type: console
 ---
 
-* [SCHEMA analysis](SCHEMA_analysis.html)
+## SCHEMA analysis
+
+
+
+* [SCHEMA at broad institute](https://schema.broadinstitute.org/)
+
+* [replicating burden results](SCHEMA_analysis.html)
+
+* [Run MIRAGE on SCHEMA genome-wide](SCHEMA_genomewide.html)
+
+

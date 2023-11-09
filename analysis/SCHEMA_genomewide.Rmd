@@ -59,9 +59,12 @@ for (i in 1:length(p_value))
 
 
 
+
 ```{r, echo=F, message=F, warning=F}
 SCHEMA_data=as_tibble(read.table("C:\\han\\Dataset\\SCHEMA\\SCHEMA_variant_results_subset_20231025.tsv", header=T))
 ```
+
+
 
 
 ```{r, echo=F, message=F, warning=F}
@@ -165,6 +168,8 @@ ggplot(summary, aes(x=var.group, y=estimate, fill=var.group)) +
 #### 3 variant groups 
 
 ```{r, echo=F, message=F, warning=F, eval=F}
+PTV_definition=c("frameshift_variant", "stop_gained", "splice_acceptor_variant","splice_donor_variant" )
+
 SCHEMA_data_with_hgnc_symbol$ac_case=as.numeric(SCHEMA_data_with_hgnc_symbol$ac_case)  # convert into numeric values 
 SCHEMA_data_with_hgnc_symbol$ac_ctrl=as.numeric(SCHEMA_data_with_hgnc_symbol$ac_ctrl)
 
@@ -225,6 +230,8 @@ ggplot(summary, aes(x=var.group, y=estimate, fill=var.group)) +
 
 
 ```{r, echo=F, message=F, warning=F, eval=F}
+MAC_threshold=5
+PTV_definition=c("frameshift_variant", "stop_gained", "splice_acceptor_variant","splice_donor_variant" )
 SCHEMA_data_with_hgnc_symbol$ac_case=as.numeric(SCHEMA_data_with_hgnc_symbol$ac_case)  # convert into numeric values 
 SCHEMA_data_with_hgnc_symbol$ac_ctrl=as.numeric(SCHEMA_data_with_hgnc_symbol$ac_ctrl)
 
@@ -240,9 +247,9 @@ n1=24248; n2=97322
 res=mirage(meta_data_mirage, n1, n2, gamma=c(3,1))
 
 ######### given a gene, check the input data with SCHEMA browser https://schema.broadinstitute.org/gene/ENSG00000055130
-check_gene="SETD1A"
-sum(meta_data_mirage %>% filter(gene==check_gene & group.index==1)%>% dplyr::select(No.case)%>% pull())
-sum(meta_data_mirage %>% filter(gene==check_gene & group.index==1)%>% dplyr::select(No.contr)%>% pull())
+#check_gene="SETD1A"
+#sum(meta_data_mirage %>% filter(gene==check_gene & group.index==1)%>% dplyr::select(No.case)%>% pull())
+#sum(meta_data_mirage %>% filter(gene==check_gene & group.index==1)%>% dplyr::select(No.contr)%>% pull())
 
 ########### save the mirage output 
 #write.csv(res$BF.PP.gene, file="C:\\han\\Dataset\\SCHEMA\\MIRAGE_on_meta_sample_estimate_delta_2vargroups_20231027.csv")

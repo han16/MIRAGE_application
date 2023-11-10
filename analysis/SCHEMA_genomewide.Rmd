@@ -346,13 +346,24 @@ SCHEMA_gene_results=multiplesheets("C:\\han\\Dataset\\SCHEMA\\41586_2022_4556_MO
 
 ```{r, echo=F, message=F, warning=F}
 SCHEMA_top_gene=SCHEMA_gene_results$`Table S5 - Gene Results`$`Gene Symbol`[1:10]
+SCHEMA_top_gene2=SCHEMA_gene_results$`Table S5 - Gene Results`[order(SCHEMA_gene_results$`Table S5 - Gene Results`$`P ca/co (comb)`, decreasing = F),]$`Gene Symbol`[1:10]
 library("ggvenn")
 x=list(
   fdr_gene=FDR_gene$Gene,
-  scheme_gene=SCHEMA_top_gene
+  scheme_gene_with_denovo=SCHEMA_top_gene
 )
 ggvenn(x)+
   ggtitle("")+
   theme(plot.title = element_text(hjust = 0.5, size=20, color = 2)) #center the title 
+
+
+
+x=list(
+  fdr_gene=FDR_gene$Gene,
+  scheme_gene_without_denovo=SCHEMA_top_gene2
+)
+ggvenn(x)+
+  ggtitle("")+
+  theme(plot.title = element_text(hjust = 0.5, size=20, color = 2)) #center the title
 
 ```

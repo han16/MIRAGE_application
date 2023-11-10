@@ -60,14 +60,14 @@ for (i in 1:length(p_value))
 
 
 
-```{r, echo=F, message=F, warning=F}
+```{r, echo=F, message=F, warning=F, eval=F}
 SCHEMA_data=as_tibble(read.table("C:\\han\\Dataset\\SCHEMA\\SCHEMA_variant_results_subset_20231025.tsv", header=T))
 ```
 
 
 
 
-```{r, echo=F, message=F, warning=F}
+```{r, echo=F, message=F, warning=F, eval=F}
 # Conversion of Gene Name to Ensembl ID https://www.biostars.org/p/430015/
 
 # install package biomaRT
@@ -295,3 +295,64 @@ ggplot(summary, aes(x=var.group, y=estimate, fill=var.group)) +
   theme(axis.text.x = element_text(angle = 30, vjust = 0.5, size=10))
 ```
 
+
+
+
+#### Bayesian FDR
+
+
+```{r, echo=F, message=F, warning=F, eval=T}
+
+##############
+########## this is the result with parameteres fixed at 5% 
+BF.PP.gene=as_tibble(read.csv("C:\\han\\Dataset\\SCHEMA\\MIRAGE_on_meta_sample_estimate_delta_2vargroups_20231027.csv", header=T))
+
+
+fdr_function=function(fdr_threshold, data)
+{
+tau=seq(0, 0.999, by=0.001)
+num_pred=NULL
+false_disc=NULL
+FDR=NULL
+for (i in 1:length(tau))
+{
+num_pred[i]=sum(ifelse(data$post_prob>tau[i], 1, 0))
+false_disc[i]=sum((1-data$post_prob)*ifelse(data$post_prob>tau[i], 1, 0))
+FDR[i]=false_disc[i]/num_pred[i]
+}
+tau_fdr=tibble(tau=tau, fdr=FDR)%>%drop_na()  # drop rows with NA
+tau_at_threshold=tau_fdr%>%filter(fdr<=fdr_threshold)
+if (nrow(tau_at_threshold)==0)
+  return("No gene is selected")
+if (nrow(tau_at_threshold)>0)
+{
+  tau_threshold=tau_at_threshold$tau[1]
+  return(data%>% filter(post_prob>tau_threshold))
+}
+
+}
+```
+
+```{r, echo=T, message=F, warning=F, eval=T}
+input_data=BF.PP.gene
+colnames(input_data)[4]="post_prob"
+FDR_gene=fdr_function(fdr_threshold = 0.05, input_data)
+```
+
+
+```{r, echo=F, message=F, warning=F, results=F}
+SCHEMA_gene_results=multiplesheets("C:\\han\\Dataset\\SCHEMA\\41586_2022_4556_MOESM3_ESM.xlsx")
+```
+
+```{r, echo=F, message=F, warning=F}
+SCHEMA_top_gene=SCHEMA_gene_results$`Table S5 - Gene Results`$`Gene Symbol`[1:10]
+library("ggvenn")
+x=list(
+  fdr_gene=FDR_gene$Gene,
+  scheme_gene=SCHEMA_top_gene
+)
+ggvenn(x)+
+  ggtitle("")+
+  theme(plot.title = element_text(hjust = 0.5, size=20, color = 2)) #center the title 
+
+```

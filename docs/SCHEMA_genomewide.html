@@ -520,6 +520,18 @@ The following chunks had caches available:
 session-info-chunk-inserted-by-workflowr
 </li>
 <li>
+unnamed-chunk-10
+</li>
+<li>
+unnamed-chunk-11
+</li>
+<li>
+unnamed-chunk-12
+</li>
+<li>
+unnamed-chunk-13
+</li>
+<li>
 unnamed-chunk-2
 </li>
 <li>
@@ -570,15 +582,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomhan16MIRAGEapplicationtree4b58a72b5d626ca4673ef53541fe0f922604ccddtargetblank4b58a72a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomhan16MIRAGEapplicationtreee41f705a7e5b5bb808ac8d5e73e0b464bd9e5541targetblanke41f705a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/han16/MIRAGE_application/tree/4b58a72b5d626ca4673ef53541fe0f922604ccdd" target="_blank">4b58a72</a>
+<a href="https://github.com/han16/MIRAGE_application/tree/e41f705a7e5b5bb808ac8d5e73e0b464bd9e5541" target="_blank">e41f705</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomhan16MIRAGEapplicationtree4b58a72b5d626ca4673ef53541fe0f922604ccddtargetblank4b58a72a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomhan16MIRAGEapplicationtreee41f705a7e5b5bb808ac8d5e73e0b464bd9e5541targetblanke41f705a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -588,7 +600,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/han16/MIRAGE_application/tree/4b58a72b5d626ca4673ef53541fe0f922604ccdd" target="_blank">4b58a72</a>.
+<a href="https://github.com/han16/MIRAGE_application/tree/e41f705a7e5b5bb808ac8d5e73e0b464bd9e5541" target="_blank">e41f705</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -653,6 +665,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/han16/MIRAGE_application/blob/e41f705a7e5b5bb808ac8d5e73e0b464bd9e5541/analysis/SCHEMA_genomewide.Rmd" target="_blank">e41f705</a>
+</td>
+<td>
+han
+</td>
+<td>
+2023-11-10
+</td>
+<td>
+11/10/2023
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/han16/MIRAGE_application/e41f705a7e5b5bb808ac8d5e73e0b464bd9e5541/docs/SCHEMA_genomewide.html" target="_blank">e41f705</a>
+</td>
+<td>
+han
+</td>
+<td>
+2023-11-10
+</td>
+<td>
+11/10/2023
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -737,6 +783,13 @@ class="math inline">\(\eta&#39;s\)</span></h3>
 <div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-b85bf888dc62471906a9" style="width:100%;height:auto;"></div>
 <script type="application/json" data-for="htmlwidget-b85bf888dc62471906a9">{"x":{"filter":"none","vertical":false,"extensions":["Buttons"],"data":[["1","2","3"],["delta:proportion of risk genes","PTV or missense_variant_mpc_&gt;=3","missense_variant_mpc_2-3"],[0.5747,0.1914,0.031],["&lt;1e-10","&lt;1e-10","1"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>variant_groups<\/th>\n      <th>parameter_estimate<\/th>\n      <th>p_value<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"Blfrtip","buttons":["copy","csv","excel","pdf","print"],"lengthMenu":[[10,25,50,-1],["10","25","50","All"]],"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 <p><img src="figure/SCHEMA_genomewide.Rmd/unnamed-chunk-9-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="bayesian-fdr" class="section level4">
+<h4>Bayesian FDR</h4>
+<pre class="r"><code>input_data=BF.PP.gene
+colnames(input_data)[4]=&quot;post_prob&quot;
+FDR_gene=fdr_function(fdr_threshold = 0.05, input_data)</code></pre>
+<p><img src="figure/SCHEMA_genomewide.Rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">

@@ -253,8 +253,20 @@ res=mirage(meta_data_mirage, n1, n2, gamma=c(3,1))
 
 ########### save the mirage output 
 #write.csv(res$BF.PP.gene, file="C:\\han\\Dataset\\SCHEMA\\MIRAGE_on_meta_sample_estimate_delta_2vargroups_20231027.csv")
+#readr::write_rds(res$BF.all, "C:\\han\\Dataset\\SCHEMA\\MIRAGE_on_meta_sample_estimate_delta_2vargroups_BF_all_20231110.Rds") # save large dataset in R 
+BF_all=readr::read_rds("C:\\han\\Dataset\\SCHEMA\\MIRAGE_on_meta_sample_estimate_delta_2vargroups_BF_all_20231110.Rds")
+BF.PP.gene=as_tibble(read.csv("C:\\han\\Dataset\\SCHEMA\\MIRAGE_on_meta_sample_estimate_delta_2vargroups_20231027.csv", header=T))
+######## check top genes and variants driving the signal 
+BF.PP.gene[order(BF.PP.gene$BF, decreasing = T),]
+BF_all[[1265]]
+sum(BF_all[[15842]]$No.case)
+sum(BF_all[[15842]]$No.contr)
 
 ```
+
+
+
+
 
 ```{r, echo=F, message=F, warning=F}
 

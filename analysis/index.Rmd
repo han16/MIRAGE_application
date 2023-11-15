@@ -16,6 +16,8 @@ editor_options:
 
 * [replicating burden results](SCHEMA_analysis.html)
 
-* [Run MIRAGE on SCHEMA genome-wide](SCHEMA_genomewide.html)
+* [Run MIRAGE genome-wide](SCHEMA_genomewide.html)
+
+* [Run MIRAGE on constraint genes](SCHEMA_constraint_gene.html)
 
 

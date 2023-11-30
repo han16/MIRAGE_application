@@ -351,10 +351,9 @@ BF.all=res$BF.all
 
 p_value=c(1.035716e-213, 8.583023e-217,  1.000000e+00)
 
-
-mirage_para_est=data.frame(variant_groups=c("delta:proportion of risk genes","PTV or missense_variant_mpc_>=3", "missense_variant_mpc_2-3"), parameter_estimate=round(c(0.4507106,  
+mirage_para_est_2group=data.frame(variant_groups=c("delta:proportion of risk genes","PTV or missense_variant_mpc_>=3", "missense_variant_mpc_2-3"), parameter_estimate=round(c(0.4507106,  
 0.676594081, 0.008126521),4), p_value=pvalue_adjust(p_value))
-mirage_para_est%>%
+mirage_para_est_2group%>%
 datatable(extensions = 'Buttons',
             options = list(dom = 'Blfrtip',
                            buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),

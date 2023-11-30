@@ -112,7 +112,7 @@ group_index=numeric()
 group_index[which(meta_data$consequence=="synonymous_variant")]=1
 
 meta_data_mirage=data.frame(ID=meta_data$locus, gene=meta_data$hgnc_symbol, No.case=ac_case_actual, No.contr=ac_ctrl_actual, group.index=group_index)
-meta_data_mirage=meta_data_mirage %>% filter(No.contr-No.case<2) # filter out variants with too many allales in control than in case 
+meta_data_mirage=meta_data_mirage %>% filter(No.contr-No.case<2) # filter out variants with too many alleles in control than in case 
 n1=24248; n2=97322 
 res=mirage(meta_data_mirage, n1, n2, gamma=1)
 

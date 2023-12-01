@@ -506,7 +506,7 @@ grid.newpage()
 # create Venn diagram with three sets 
 draw.triple.venn(area1=10,area2=110, area3 =33,  
                  n12=10, n23=22, n13=10, n123=10,  
-                 category=c("SCHEMA 10 Risk Genes","MIRAGE FDR genes","SCHEMA FDR genes"), 
+                 category=c("SCHEMA 10 risk genes","MIRAGE FDR genes","SCHEMA FDR genes"), 
                  col="Red",fill=c("Green","Yellow","Blue"), lty="dashed")
 ```
 

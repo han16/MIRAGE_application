@@ -479,6 +479,39 @@ ggvenn(x)+
  fisher.test(matrix(c(22,110, 33,3235), nrow=2))
 ```
 
+```{r, echo=F, message=F, warning=F}
+
+SCHEMA_top_10_gene=SCHEMA_gene_results$`Table S5 - Gene Results`[order(SCHEMA_gene_results$`Table S5 - Gene Results`$`P ca/co (comb)`, decreasing = F),]$`Gene Symbol`[1:10]
+SCHEMA_FDR_gene=SCHEMA_gene_results$`Table S5 - Gene Results`[order(SCHEMA_gene_results$`Table S5 - Gene Results`$`P ca/co (comb)`, decreasing = F),]$`Gene Symbol`[1:33]
+
+X=list(
+SCHEMA_10_Risk_Gene=SCHEMA_top_gene2,
+  MIRAGE_gene=FDR_gene$Gene,
+SCHEMA_FDR_gene=SCHEMA_FDR_gene
+  )
+
+
+library(ggvenn)
+ggvenn(
+  X, 
+  fill_color = c("#0073C2FF", "#EFC000FF",  "#CD534CFF"),
+  stroke_size = 0.5, set_name_size = 4
+  )
+
+
+library("VennDiagram") 
+# move to new plotting page 
+grid.newpage() 
+  
+# create Venn diagram with three sets 
+draw.triple.venn(area1=10,area2=110, area3 =33,  
+                 n12=10, n23=22, n13=10, n123=10,  
+                 category=c("SCHEMA 10 Risk Genes","MIRAGE FDR genes","SCHEMA FDR genes"), 
+                 col="Red",fill=c("Green","Yellow","Blue"), lty="dashed")
+```
+
+
+
 ## enrichment of top genes 
 
 

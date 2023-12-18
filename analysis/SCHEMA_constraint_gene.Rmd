@@ -512,6 +512,10 @@ draw.triple.venn(area1=10,area2=110, area3 =33,
 
 
 
+## manhattan plot of top genes 
+
+
+
 ## enrichment of top genes 
 
 

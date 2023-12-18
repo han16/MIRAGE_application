@@ -1,0 +1,301 @@
+---
+title: "SCHEMA manhattan plot"
+output: html_document
+date: "2023-12-18"
+---
+
+
+
+```{r, echo=F, warning=F, message=F}
+rm(list=ls())
+set.seed(123)
+knitr::opts_chunk$set(autodep = TRUE)
+library(knitr)
+library(RSQLite)
+library(dplyr)
+library(knitr)
+knitr::opts_chunk$set(cache = TRUE, warning = FALSE, 
+                      message = FALSE, cache.lazy = FALSE) # avoid error of long vectors https://stackoverflow.com/questions/39417003/long-vectors-not-supported-yet-error-in-rmd-but-not-in-r-script 
+library(kableExtra)
+library(RColorBrewer)
+library(gplots)
+library(tidyverse)
+library(gridExtra)
+library(ggpubr)
+library(DT)
+#library("devtools")
+#install.packages("Rtools")
+#install_github('xinhe-lab/mirage')
+library(mirage)
+
+multiplesheets <- function(fname) {
+   
+  # getting info about all excel sheets
+  sheets <- readxl::excel_sheets(fname)
+  tibble <- lapply(sheets, function(x) readxl::read_excel(fname, sheet = x))
+  data_frame <- lapply(tibble, as.data.frame)
+    
+  # assigning names to data frames
+  names(data_frame) <- sheets
+    
+  # print data frame
+  print(data_frame)
+}
+
+pvalue_adjust=function(p_value)
+{
+  p_value_adjust=numeric()
+for (i in 1:length(p_value))
+{
+  if (is.na(p_value[i])==T)
+    p_value_adjust[i]=p_value[i]
+  if (is.na(p_value[i])==F & p_value[i]<1e-10)
+    p_value_adjust[i]="<1e-10"
+  if (is.na(p_value[i])==F & p_value[i]>1e-10)
+    p_value_adjust[i]=round(p_value[i],10)
+}
+  return(p_value_adjust)
+}
+
+```
+
+
+
+
+```{r, echo=F, message=F, warning=F, eval=F}
+SCHEMA_data=as_tibble(read.table("C:\\han\\Dataset\\SCHEMA\\SCHEMA_variant_results_subset_20231025.tsv", header=T))
+```
+
+
+```{r, echo=F, message=F, warning=F, results=F}
+# get constraint genes 
+Table13=multiplesheets("C:/han/Dataset/20231017_PMID_27535533/Lek 2016 suppl table/nature19057-s2/nature19057-SI Table 13.xlsx")
+
+
+#suppl_table11=read.table(gzfile("../../../../Dataset/20231018_PMID_32461654/41586_2020_2308_MOESM4_ESM/supplement/supplementary_dataset_11_full_constraint_metrics.tsv.gz"),fill = TRUE , header = TRUE ) # read into gz file 
+# length(unique(suppl_table11 %>% filter(pLI>0.9) %>% select(gene) %>%pull)) 3476 genes with pLI>0.9 
+suppl_table11=read.table(gzfile("C:/han/Dataset/20231018_PMID_32461654/41586_2020_2308_MOESM4_ESM/supplement/supplementary_dataset_11_full_constraint_metrics.tsv.gz"),fill = TRUE , header = TRUE ) # read into gz file
+```
+
+
+
+
+```{r, echo=F, message=F, warning=F, eval=F}
+# Conversion of Gene Name to Ensembl ID https://www.biostars.org/p/430015/
+
+# install package biomaRT
+#if (!require("BiocManager", quietly = TRUE))
+#    install.packages("BiocManager")
+
+#BiocManager::install("biomaRt")
+
+library(biomaRt)
+mart <- useMart('ENSEMBL_MART_ENSEMBL')
+mart <- useDataset('hsapiens_gene_ensembl', mart)
+
+annotLookup <- getBM(
+  mart = mart,
+  attributes = c(
+    'hgnc_symbol',
+    'ensembl_gene_id',
+    'gene_biotype'),
+  uniqueRows = TRUE)
+colnames(annotLookup)[2]="gene_id"
+
+SCHEMA_data_with_hgnc_symbol=as_tibble(right_join(annotLookup, SCHEMA_data, by="gene_id")) 
+```
+
+
+
+```{r, echo=F, message=F, warning=F, eval=F}
+
+##############
+##########
+rm("BF.PP.gene")
+#BF.PP.gene=as_tibble(read.csv("C:\\han\\Dataset\\SCHEMA\\MIRAGE_on_meta_sample_estimate_delta_3vargroups_20231027.csv", header=T))
+load("C:\\han\\Dataset\\SCHEMA\\MIRAGE_on_meta_sample_estimate_delta_2vargroups_for_constraint_gene_20231120.RData")
+
+fdr_function=function(fdr_threshold, data)
+{
+tau=seq(0, 0.999, by=0.001)
+num_pred=NULL
+false_disc=NULL
+FDR=NULL
+for (i in 1:length(tau))
+{
+num_pred[i]=sum(ifelse(data$post_prob>tau[i], 1, 0))
+false_disc[i]=sum((1-data$post_prob)*ifelse(data$post_prob>tau[i], 1, 0))
+FDR[i]=false_disc[i]/num_pred[i]
+}
+tau_fdr=tibble(tau=tau, fdr=FDR)%>%drop_na()  # drop rows with NA
+tau_at_threshold=tau_fdr%>%filter(fdr<=fdr_threshold)
+if (nrow(tau_at_threshold)==0)
+  return("No gene is selected")
+if (nrow(tau_at_threshold)>0)
+{
+  tau_threshold=tau_at_threshold$tau[1]
+  return(data%>% filter(post_prob>tau_threshold))
+}
+
+}
+```
+
+
+
+
+
+### gene Manhattan plot
+
+```{r, echo=F, message=F, warning=F}
+#rm("BF.PP.gene")
+#load("C:\\han\\Dataset\\SCHEMA\\MIRAGE_on_meta_sample_estimate_delta_2vargroups_for_constraint_gene_20231120.RData")
+
+############## run once to get the data for plot 
+#data_for_plot=data.frame(Gene=BF.PP.gene$Gene, BF=BF.PP.gene$BF,  post_prob=BF.PP.gene$post.prob)
+##### extrat chr and position for each gene 
+#chr=numeric(); pos=numeric()
+#for (i in 1:nrow(data_for_plot))
+#for (i in 1:2)  
+{
+ # cat(i, "is running", "\n")
+#  variant=SCHEMA_data_with_hgnc_symbol %>% filter(hgnc_symbol==data_for_plot$Gene[i]) %>% dplyr::select(locus)%>% pull() # find all variants for a gene 
+#  colon_pos=unlist(gregexpr(":", variant[1])) # location positions of ":"
+#  chr[i]=substr(variant[1], 1,colon_pos[1]-1)
+#  pos[i]=substr(variant[1], colon_pos[1]+1, nchar(variant[1]))
+}
+#data_manhattan_plot=data_for_plot%>%mutate(chr=as.numeric(chr), pos=as.numeric(pos))
+#write.csv(data_manhattan_plot, file="C:\\han\\Dataset\\SCHEMA\\MIRAGE_on_meta_sample_estimate_delta_2vargroups_for_constraint_gene_data_manhattan_plot_20231218.csv")
+data_manhattan_plot=read.csv("C:\\han\\Dataset\\SCHEMA\\MIRAGE_on_meta_sample_estimate_delta_2vargroups_for_constraint_gene_data_manhattan_plot_20231218.csv", header=T)
+#install.packages("remotes")
+#remotes::install_github("kevinlkx/mapgen")  # download kevin's package 
+#library(mapgen)
+
+
+#' @title Make gene manhattan plot
+#'
+#' @param gene.pip.res Gene level finemapping result
+#' @param chr Name of the chr column in the gene finemapping summary statistics data
+#' @param pos Name of the pos column in the gene finemapping summary statistics data
+#' @param gene_name Name of the gene name column in the gene finemapping summary statistics data
+#' @param gene_pip Name of the gene PIP column in the gene finemapping summary statistics data
+#' @param sig.pip Signficant gene PIP (default: 0.8)
+#' @param highlight Highlight genes with gene PIP > sig.pip
+#' @param ylim Truncate gene PIP to ylim value in the plot (default: 1.25).
+#' @param point.size Size of the points.
+#' @param label.size Size of the labels.
+#' @param font.size Font size of the text.
+#' @param title Title of the plot
+#' @param max.overlaps Exclude text labels that overlap too many things (default: 10).
+#' @import ggplot2
+#' @importFrom magrittr %>%
+#' @export
+#'
+gene_manhattan_plot <- function(gene.pip.res,
+                                chr='chr',
+                                pos='pos',
+                                gene_name='gene_name',
+                                gene_pip='gene_pip',
+                                sig.pip = 0.8,
+                                highlight = TRUE,
+                                ylim = 1.25,
+                                point.size = 2,
+                                label.size = point.size*2,
+                                font.size = 15,
+                                max.overlaps = 10,
+                                title = '') {
+
+  gene.pip.res <- gene.pip.res %>% dplyr::rename(chr = all_of(chr),
+                                                 pos = all_of(pos),
+                                                 gene_name = all_of(gene_name),
+                                                 gene_pip = all_of(gene_pip))
+
+  # Highlight genes
+  gene.pip.res <- gene.pip.res %>%
+    dplyr::mutate( is_highlight=(gene_pip >= sig.pip))
+
+  df <- gene.pip.res %>%
+
+    # Compute chromosome size
+    dplyr::group_by(chr) %>%
+    dplyr::summarise(chr_len = max(as.numeric(pos))) %>%
+
+    # Calculate cumulative position of each chromosome
+    dplyr::mutate(tot=cumsum(chr_len)-chr_len) %>%
+    dplyr::select(-chr_len) %>%
+
+    # Add this info to the initial dataset
+    dplyr::left_join(gene.pip.res, ., by=c("chr"="chr")) %>%
+
+    # Add a cumulative position of each SNP
+    dplyr::arrange(chr, pos) %>%
+    dplyr::mutate( pos_cum=pos+tot)
+
+  axis.df <- df %>%
+    dplyr::group_by(chr) %>%
+    dplyr::summarize(center=( max(pos_cum) + min(pos_cum) ) / 2 )
+
+  p <- ggplot(df,
+              aes(x = pos_cum, y = gene_pip)) +
+
+    # Show all points
+    ggrastr::geom_point_rast( aes(color=as.factor(chr)), size=point.size) +
+    scale_color_manual(values = rep(c("grey", "skyblue"), 22 )) +
+
+    # custom X axis:
+    scale_x_continuous(label = gsub("chr","", axis.df$chr, ignore.case = TRUE), breaks= axis.df$center) +
+    scale_y_continuous(expand = c(0, 0), limits = c(0,ylim)) +     # remove space between plot area and x axis
+
+    # Add highlighted points
+    ggrastr::geom_point_rast(data=subset(df, is_highlight==TRUE), color="orange", size=point.size) +
+
+    # Add label using ggrepel to avoid overlapping
+    ggrepel::geom_label_repel( data=subset(df, is_highlight==TRUE),
+                               aes(label=gene_name),
+                               size=label.size,
+                               min.segment.length = 0,
+                               label.size = NA,
+                               fill = alpha(c("white"),0),
+                               max.overlaps = max.overlaps) +
+
+    # Custom the theme:
+    theme_bw() +
+    theme(
+      text = element_text(size = font.size),
+      legend.position="none",
+      panel.border = element_blank(),
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      plot.title = element_text(hjust = 0.5)
+    ) +
+    ggtitle(title) +
+    theme() +
+    xlab("Chromosome") +
+    #ylab("Gene PIP")
+    ylab("Posterior probability")
+
+  return(p)
+
+}
+
+
+data_manhattan_plot=data_manhattan_plot[complete.cases(data_manhattan_plot), ] # remove rows with NA
+
+#gene_manhattan_plot(data_manhattan_plot, chr=data_manhattan_plot$chr, pos=data_manhattan_plot$pos, gene_name=data_manhattan_plot$Gene, gene_pip = data_manhattan_plot$post_prob)
+#png("C:\\Shengtong\\Research\\rare-var\\RareVariant\\2023_0413_Figure_for_paper\\Fig_top_gene_manhattan_plot.png")
+
+gene_manhattan_plot(
+  data_manhattan_plot,
+  chr = "chr",
+  pos = "pos",
+  gene_name = "Gene",
+  gene_pip = "post_prob", 
+  sig.pip = 0.9,  # top 10 genes sort(data_manhattan_plot$post_prob)[17830:17840]
+  highlight = TRUE,
+  ylim = 1.5,
+  point.size = 2,
+  label.size = 4,
+  font.size = 10,
+  max.overlaps = 25,
+  title = "Manhattan plot of posterior probability")
+#dev.off()
+```

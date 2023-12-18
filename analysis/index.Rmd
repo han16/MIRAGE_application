@@ -20,4 +20,6 @@ editor_options:
 
 * [Run MIRAGE on constraint genes](SCHEMA_constraint_gene.html)
 
+* [manhattan plot of top genes](SCHEMA_manhattan_plot.html)
+
 

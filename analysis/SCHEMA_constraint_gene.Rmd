@@ -498,6 +498,7 @@ ggvenn(
   stroke_size = 0.5, set_name_size = 4
   )
 
+#png("C:\\Users\\hans\\OneDrive - Marquette University\\SCHEMA\\Fig_venn_diagram.png")
 
 library("VennDiagram") 
 # move to new plotting page 
@@ -508,18 +509,84 @@ draw.triple.venn(area1=10,area2=110, area3 =33,
                  n12=10, n23=22, n13=10, n123=10,  
                  category=c("SCHEMA 10 risk genes","MIRAGE FDR genes","SCHEMA FDR genes"), 
                  col="Red",fill=c("Green","Yellow","Blue"), lty="dashed")
+#dev.off()
 ```
 
 
 
-## manhattan plot of top genes 
 
 
 
-## enrichment of top genes 
+
+## shared genes with other neurodevelopmental disorders 
+
+```{r, echo=F, message=F, warning=F}
+neuro_disorers=SCHEMA_gene_results$`Table S11 - Genes from genome-w`
+```
+
+* shared genes with autism 
 
 
+```{r, echo=F, message=F, warning=F}
+#length(intersect(FDR_gene$Gene,as_tibble(neuro_disorers) %>% filter(Category=="ASD genes") %>% dplyr::select(`Gene name`) %>% pull()))
 
+
+X=list(
+  MIRAGE_SCHEMA_gene=FDR_gene$Gene,
+Autism_gene=as_tibble(neuro_disorers) %>% filter(Category=="ASD genes") %>% dplyr::select(`Gene name`) %>% pull()
+  )
+
+
+library(ggvenn)
+ggvenn(
+  X, 
+  fill_color = c("#0073C2FF", "#EFC000FF",  "#CD534CFF"),
+  stroke_size = 0.5, set_name_size = 4
+  )
+
+```
+
+
+* shared genes with DD/ID genes
+
+
+```{r, echo=F, message=F, warning=F}
+
+X=list(
+  MIRAGE_SCHEMA_gene=FDR_gene$Gene,
+DD_ID_gene=as_tibble(neuro_disorers) %>% filter(Category=="DD/ID genes") %>% dplyr::select(`Gene name`) %>% pull()
+  )
+
+
+library(ggvenn)
+ggvenn(
+  X, 
+  fill_color = c("#0073C2FF", "#EFC000FF",  "#CD534CFF"),
+  stroke_size = 0.5, set_name_size = 4
+  )
+
+```
+
+
+* shared genes with Schizophrenia GWAS genes genes
+
+
+```{r, echo=F, message=F, warning=F}
+
+X=list(
+  MIRAGE_SCHEMA_gene=FDR_gene$Gene,
+SCZ_GWAS_gene=as_tibble(neuro_disorers) %>% filter(Category=="Schizophrenia GWAS genes") %>% dplyr::select(`Gene name`) %>% pull()
+  )
+
+
+library(ggvenn)
+ggvenn(
+  X, 
+  fill_color = c("#0073C2FF", "#EFC000FF",  "#CD534CFF"),
+  stroke_size = 0.5, set_name_size = 4
+  )
+
+```
 
 
 

@@ -528,7 +528,7 @@ neuro_disorers=SCHEMA_gene_results$`Table S11 - Genes from genome-w`
 
 
 ```{r, echo=F, message=F, warning=F}
-#length(intersect(FDR_gene$Gene,as_tibble(neuro_disorers) %>% filter(Category=="ASD genes") %>% dplyr::select(`Gene name`) %>% pull()))
+intersect(FDR_gene$Gene,as_tibble(neuro_disorers) %>% filter(Category=="ASD genes") %>% dplyr::select(`Gene name`) %>% pull())
 
 
 X=list(
@@ -551,6 +551,7 @@ ggvenn(
 
 
 ```{r, echo=F, message=F, warning=F}
+intersect(FDR_gene$Gene, as_tibble(neuro_disorers) %>% filter(Category=="DD/ID genes") %>% dplyr::select(`Gene name`) %>% pull())
 
 X=list(
   MIRAGE_SCHEMA_gene=FDR_gene$Gene,
@@ -568,10 +569,11 @@ ggvenn(
 ```
 
 
-* shared genes with Schizophrenia GWAS genes genes
+* shared genes with Schizophrenia GWAS genes
 
 
 ```{r, echo=F, message=F, warning=F}
+intersect(FDR_gene$Gen, as_tibble(neuro_disorers) %>% filter(Category=="Schizophrenia GWAS genes") %>% dplyr::select(`Gene name`) %>% pull())
 
 X=list(
   MIRAGE_SCHEMA_gene=FDR_gene$Gene,

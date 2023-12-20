@@ -591,4 +591,41 @@ ggvenn(
 ```
 
 
+```{r, echo=F, message=F, warning=F}
+x=list(
+  MIRAGE_SCHEMA_gene=FDR_gene$Gene,
+  Autism_gene=as_tibble(neuro_disorers) %>% filter(Category=="ASD genes") %>% dplyr::select(`Gene name`) %>% pull(),
+  DD_ID_gene=as_tibble(neuro_disorers) %>% filter(Category=="DD/ID genes") %>% dplyr::select(`Gene name`) %>% pull(),
+  SCZ_GWAS_gene=as_tibble(neuro_disorers) %>% filter(Category=="Schizophrenia GWAS genes") %>% dplyr::select(`Gene name`) %>% pull()
+  #SCZ_gene=SCHEMA_top_10_gene
+)
+library(VennDiagram)
+
+display_venn <- function(x, ...){
+  library(VennDiagram)
+  grid.newpage()
+  venn_object <- venn.diagram(x, filename = NULL, ...)
+  grid.draw(venn_object)
+}
+
+display_venn(
+        x,
+    #    category.names = c("MIRAGE FDR genes" , "Autism genes" , "DD/ID genes", "SCZ GWAS genes"),
+    category.names = c("MIRAGE FDR genes" , "Autism genes" , "DD/ID genes", "SCZ GWAS genes"),
+        # Circles
+        lwd = 2,
+        lty = 'blank',
+        fill = c("#999999", "#E69F00", "#56B4E9", "#009E73"),
+        # Numbers
+        cex = .9,
+        fontface = "italic",
+        # Set names
+        cat.cex = 1,
+        cat.fontface = "bold",
+        cat.default.pos = "outer",
+       # cat.dist = c(0.055, 0.055, 0.1, 0.1, 0.3 )
+         cat.dist = c(0.055, 0.055, 0.1, 0.1 )
+)
+```
+
 

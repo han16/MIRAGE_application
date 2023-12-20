@@ -491,12 +491,12 @@ SCHEMA_FDR_gene=SCHEMA_FDR_gene
   )
 
 
-library(ggvenn)
-ggvenn(
-  X, 
-  fill_color = c("#0073C2FF", "#EFC000FF",  "#CD534CFF"),
-  stroke_size = 0.5, set_name_size = 4
-  )
+#library(ggvenn)
+#ggvenn(
+#  X, 
+#  fill_color = c("#0073C2FF", "#EFC000FF",  "#CD534CFF"),
+#  stroke_size = 0.5, set_name_size = 4
+#  )
 
 #png("C:\\Users\\hans\\OneDrive - Marquette University\\SCHEMA\\Fig_venn_diagram.png")
 
@@ -508,7 +508,8 @@ grid.newpage()
 draw.triple.venn(area1=10,area2=110, area3 =33,  
                  n12=10, n23=22, n13=10, n123=10,  
                  category=c("SCHEMA 10 risk genes","MIRAGE FDR genes","SCHEMA FDR genes"), 
-                 col="Red",fill=c("Green","Yellow","Blue"), lty="dashed")
+                 col="Red",fill=c("Green","Yellow","Blue"), lty="dashed", 
+                 cat.cex = 0.8)
 #dev.off()
 ```
 
@@ -642,6 +643,8 @@ display_venn <- function(x, ...){
   grid.draw(venn_object)
 }
 
+#png("C:\\Users\\hans\\OneDrive - Marquette University\\SCHEMA\\Fig_overlapping_genes.png")
+
 display_venn(
         x,
     #    category.names = c("MIRAGE FDR genes" , "Autism genes" , "DD/ID genes", "SCZ GWAS genes"),
@@ -660,6 +663,8 @@ display_venn(
        # cat.dist = c(0.055, 0.055, 0.1, 0.1, 0.3 )
          cat.dist = c(0.055, 0.055, 0.1, 0.1 )
 )
+
+#dev.off()
 ```
 
 

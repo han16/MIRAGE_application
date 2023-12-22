@@ -563,7 +563,14 @@ neuro_disorers=SCHEMA_gene_results$`Table S11 - Genes from genome-w`
 
 
 ```{r, echo=F, message=F, warning=F}
-intersect(FDR_gene$Gene,as_tibble(neuro_disorers) %>% filter(Category=="ASD genes") %>% dplyr::select(`Gene name`) %>% pull())
+Fu_gene_list=as_tibble(read.csv("C:/han/Dataset/20231221_PMID_35982160/Fu 2022 Suppl-41588_2022_1104_MOESM3_ESM.csv"))
+ASC_gene=Fu_gene_list %>% filter(ASD185=="TRUE") %>% dplyr::select(gene_gencodeV33) %>% pull
+
+
+
+#intersect(FDR_gene$Gene,as_tibble(neuro_disorers) %>% filter(Category=="ASD genes") %>% dplyr::select(`Gene name`) %>% pull())
+
+intersect(FDR_gene$Gene,ASC_gene)
 
 
 X=list(
@@ -627,9 +634,14 @@ ggvenn(
 
 
 ```{r, echo=F, message=F, warning=F}
+
+Fu_gene_list=as_tibble(read.csv("C:/han/Dataset/20231221_PMID_35982160/Fu 2022 Suppl-41588_2022_1104_MOESM3_ESM.csv"))
+ASC_gene=Fu_gene_list %>% filter(ASD185=="TRUE") %>% dplyr::select(gene_gencodeV33) %>% pull
+
 x=list(
   MIRAGE_SCHEMA_gene=FDR_gene$Gene,
-  Autism_gene=as_tibble(neuro_disorers) %>% filter(Category=="ASD genes") %>% dplyr::select(`Gene name`) %>% pull(),
+  #Autism_gene=as_tibble(neuro_disorers) %>% filter(Category=="ASD genes") %>% dplyr::select(`Gene name`) %>% pull(),
+  Autism_gene=ASC_gene,
   DD_ID_gene=as_tibble(neuro_disorers) %>% filter(Category=="DD/ID genes") %>% dplyr::select(`Gene name`) %>% pull(),
   SCZ_GWAS_gene=as_tibble(neuro_disorers) %>% filter(Category=="Schizophrenia GWAS genes") %>% dplyr::select(`Gene name`) %>% pull()
   #SCZ_gene=SCHEMA_top_10_gene

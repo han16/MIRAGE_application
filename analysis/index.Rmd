@@ -23,3 +23,4 @@ editor_options:
 * [manhattan plot of top genes](SCHEMA_manhattan_plot.html)
 
 
+* [gene set enrichment analysis](Geneset_enrichment_analysis.html)

@@ -92,6 +92,11 @@ if (nrow(tau_at_threshold)>0)
 }
 ```
 
+```{r, echo=F, message=F, warning=F, results=F}
+SCHEMA_gene_results=multiplesheets("C:\\han\\Dataset\\SCHEMA\\41586_2022_4556_MOESM3_ESM.xlsx")
+```
+
+
 ```{r, echo=T, message=F, warning=F, eval=T}
 input_data=BF.PP.gene
 colnames(input_data)[3]="post_prob"
@@ -100,4 +105,9 @@ risk_gene=FDR_gene$Gene
 #write.table(risk_gene, file="C:\\Users\\hans\\OneDrive - Marquette University\\SCHEMA\\SCHEMA_FDR_gene.txt", quote=F, col.names = F, row.names = F) # output gene list for enrichment analysis 
 non_risk_gene=intersect(input_data$Gene, risk_gene)
 #write.table(non_risk_gene, file="C:\\Users\\hans\\OneDrive - Marquette University\\SCHEMA\\SCHEMA_nonrisk_gene.txt", quote=F, col.names = F, row.names = F)
+
+SCHEMA_top_gene=SCHEMA_gene_results$`Table S5 - Gene Results`$`Gene Symbol`[1:33]
+MIRAGE_new_risk_gene=setdiff(risk_gene, SCHEMA_top_gene)
+#write.table(MIRAGE_new_risk_gene, file="C:\\Users\\hans\\OneDrive - Marquette University\\SCHEMA\\MIRAGE_new_risk_gene.txt", quote=F, col.names = F, row.names = F)
+
 ```

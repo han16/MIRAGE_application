@@ -229,4 +229,72 @@ FDR_gene_expression[4]=sum(FDR_gene_stage4)
   geom_line()+
   geom_point()   # average gene expression per gene per region 
  
+  
+  
+  
+```
+
+
+
+```{r, echo=F, message=F, warning=F}
+Braincode_stage=list()
+Braincode_stage[[1]]=covarianceSelection::brainspan_id$Braincode[3:7] # early prenatal 
+Braincode_stage[[2]]=covarianceSelection::brainspan_id$Braincode[8:14] # early mid prenatal 
+Braincode_stage[[3]]=covarianceSelection::brainspan_id$Braincode[15:21] # late mid-prenatal 
+Braincode_stage[[4]]=covarianceSelection::brainspan_id$Braincode[22:24] # late prenatal 
+Braincode_stage[[5]]=covarianceSelection::brainspan_id$Braincode[25:30] # infancy: early infancy+late infancy 
+Braincode_stage[[6]]=covarianceSelection::brainspan_id$Braincode[31:37] # childhood: early childhood+late childhood 
+Braincode_stage[[7]]=covarianceSelection::brainspan_id$Braincode[38:41] # adolescence: early childhood+late childhood
+Braincode_stage[[8]]=covarianceSelection::brainspan_id$Braincode[42:57] # adulthood
+FDR_gene_expression=numeric()
+
+FDR_gene_col_index=which(colnames(genexp)%in%FDR_gene$Gene)
+
+FDR_gene_expression_average=numeric()
+for (j in 1:length(Braincode_stage))
+{
+  stage_row_index=numeric()
+for (i in 1:length(Braincode_stage[[j]]))
+  {
+   stage_row_index=c(stage_row_index, rownames(genexp)[grepl(Braincode_stage[[j]][i], rownames(genexp))])
+FDR_gene_stage=genexp[which(rownames(genexp)%in%stage_row_index), c(FDR_gene_col_index)]
+}
+FDR_gene_expression_average[j]=sum(FDR_gene_stage)/(prod(dim(FDR_gene_stage)))
+}
+
+ggplot(data.frame(gene_expression=FDR_gene_expression_average, stage=c("1:Early-prenatal", "2:Early-mid-prenatal", "3:Late-mid-prenatal", "4:Late-prenatal", "5:Infancy", "6:Childhood", "7:Adolescence", "8:Adulthood")), aes(x=stage, y=gene_expression, group=1)) +
+   theme_classic()+
+  geom_line()+
+  xlab("")+ylab("Average gene expression")+
+  ggtitle("MIRAGE FDR genes")+
+  theme(plot.title = element_text(hjust = 0.5))+  # center plot title
+  theme(axis.text.x = element_text(angle = 30, vjust = 0.5, size=13))+
+  geom_point()   # average gene expression per gene per region 
+
+
+####################
+ GRIN2A_gene_col_index=which(colnames(genexp)=="GRIN2A")
+
+FDR_gene_expression_average=numeric()
+for (j in 1:length(Braincode_stage))
+{
+  stage_row_index=numeric()
+for (i in 1:length(Braincode_stage[[j]]))
+  {
+   stage_row_index=c(stage_row_index, rownames(genexp)[grepl(Braincode_stage[[j]][i], rownames(genexp))])
+FDR_gene_stage=genexp[which(rownames(genexp)%in%stage_row_index), c(GRIN2A_gene_col_index)]
+}
+FDR_gene_expression_average[j]=sum(FDR_gene_stage)/(length(FDR_gene_stage))
+}
+
+ggplot(data.frame(gene_expression=FDR_gene_expression_average, stage=c("1:Early-prenatal", "2:Early-mid-prenatal", "3:Late-mid-prenatal", "4:Late-prenatal", "5:Infancy", "6:Childhood", "7:Adolescence", "8:Adulthood")), aes(x=stage, y=gene_expression, group=1)) +
+  geom_line()+
+  theme_classic()+
+  xlab("")+ylab("Average gene expression")+
+  ggtitle("Gene GRIN2A")+
+  theme(plot.title = element_text(hjust = 0.5))+  # center plot title 
+  theme(axis.text.x = element_text(angle = 30, vjust = 0.5, size=13))+
+  geom_point()   # average gene expression per gene per region 
+
+
 ```

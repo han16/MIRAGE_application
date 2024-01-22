@@ -360,17 +360,22 @@ datatable(extensions = 'Buttons',
                            lengthMenu = list(c(10,25,50,-1),
                                              c(10,25,50,"All"))))
 
-var_group=c("(1) PTV or missense_variant_mpc_>=3", "(2) missense_variant_mpc_2-3")
+var_group=c("(1) PTV or missense variant mpc_>=3", "(2) missense variant mpc_2-3")
 estimate=c(0.676594081, 0.008126521)
 summary=data.frame(var.group=var_group, estimate=estimate)
+
+#png("C:\\Users\\hans\\OneDrive - Marquette University\\SCHEMA\\Fig_parameter_estimate.png")
+
 ggplot(summary, aes(x=var.group, y=estimate, fill=var.group)) + 
    geom_bar(stat="identity", position=position_dodge())+
   theme(legend.title=element_blank())+
-  xlab("variant groups")+ylab(expression(paste(hat(eta))))+
+  xlab("")+ylab(expression(paste(hat(eta))))+
   ylim(c(0,1))+
-  ggtitle("")+
-  theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
-  theme(axis.text.x = element_text(angle = 30, vjust = 0.5, size=10))
+  ggtitle(" Estimated proportion of risk variants in variant groups")+
+  theme(plot.title = element_text(hjust = 0.5, size=15))+  #center the title 
+  theme(axis.text.x = element_text(angle = 0, vjust = 0.5, size=12))+
+  theme(legend.position="none")
+#dev.off()
 ```
 
 #### Bayesian FDR

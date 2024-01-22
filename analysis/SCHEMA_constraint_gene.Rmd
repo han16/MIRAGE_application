@@ -378,6 +378,9 @@ ggplot(summary, aes(x=var.group, y=estimate, fill=var.group)) +
 #dev.off()
 ```
 
+
+
+
 #### Bayesian FDR
 
 
@@ -420,6 +423,58 @@ colnames(input_data)[3]="post_prob"
 FDR_gene=fdr_function(fdr_threshold = 0.05, input_data)
 ```
 
+
+
+
+#### BF in every variant group
+
+
+```{r, echo=F, message=F, warning=F}
+rm("BF.PP.gene")
+#BF.PP.gene=as_tibble(read.csv("C:\\han\\Dataset\\SCHEMA\\MIRAGE_on_meta_sample_estimate_delta_3vargroups_20231027.csv", header=T))
+load("C:\\han\\Dataset\\SCHEMA\\MIRAGE_on_meta_sample_estimate_delta_2vargroups_for_constraint_gene_20231120.RData")  # load MIRAGE results
+
+num_category=2 # number of variant groups 
+BF_variant_group=matrix(nrow=length(BF.all), ncol=num_category)
+for (i in 1:length(BF.all))
+{
+variant_full_infor=BF.all[[i]]  # given a gene, say the first gene 
+variant_group_BF=numeric() # store variant group BF for a given gene 
+for (j in 1:num_category)
+{
+  if (sum(variant_full_infor$original.index==j)==0) # no variants in this group
+    variant_group_BF[j]=NA
+  
+  if (sum(variant_full_infor$original.index==j)>0) # variants exist in this group
+    variant_group_BF[j]=prod(1-eta.est[j]+eta.est[j]*
+    variant_full_infor[which(variant_full_infor$original.index==j),]$var.BF) 
+  # product of BF of variants within that variant group 
+   
+}
+BF_variant_group[i,]=variant_group_BF
+}
+rownames(BF_variant_group)=BF.PP.gene$Gene
+colnames(BF_variant_group)=c("(1) PTV or missense variant mpc_>=3", "(2) missense variant mpc_2-3")
+
+BF_variant_group_FDR_gene=as_tibble(BF_variant_group) %>% mutate(Gene=BF.PP.gene$Gene, BF=BF.PP.gene$BF, post.prob=BF.PP.gene$post.prob) %>% filter(Gene %in% FDR_gene$Gene==T)
+
+BF_variant_group_all_gene=as_tibble(BF_variant_group) %>% mutate(Gene=BF.PP.gene$Gene, BF=BF.PP.gene$BF, post.prob=BF.PP.gene$post.prob) %>% arrange(desc(post.prob))
+
+#write.csv(BF_variant_group_all_gene, file="C:\\Users\\hans\\OneDrive - Marquette University\\SCHEMA\\Suppl\\BF_variant_group_all_genes.csv")
+
+
+BF_variant_group_FDR_gene_plot=data.frame(Gene=c(BF_variant_group_FDR_gene$Gene, BF_variant_group_FDR_gene$Gene), log_BF=c(round(log(BF_variant_group_FDR_gene$`(1) PTV or missense variant mpc_>=3`),2),  round(log(BF_variant_group_FDR_gene$`(2) missense variant mpc_2-3`),2)), group=c(rep("(1) PTV or missense variant mpc_>=3", nrow(BF_variant_group_FDR_gene)), rep("(2) missense variant mpc_2-3", nrow(BF_variant_group_FDR_gene))))
+
+# Create the barplot
+ggplot(data=BF_variant_group_FDR_gene_plot[1:20,], aes(x=Gene, y=log_BF, fill=group)) +
+  geom_bar(stat="identity")+
+  geom_text(aes( label=log_BF), vjust=1.6, angle = 0,
+            color="black", size=3.5)+
+  scale_fill_brewer(palette="Paired")+
+   theme(axis.text.x = element_text(angle = 30, vjust = 0.5, size=7))
+  theme_minimal()
+
+```
 
 
 
@@ -483,6 +538,9 @@ ggvenn(x)+
 
  fisher.test(matrix(c(22,110, 33,3235), nrow=2))
 ```
+
+
+
 
 ```{r, echo=F, message=F, warning=F}
 

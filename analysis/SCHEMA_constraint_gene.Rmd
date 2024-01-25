@@ -227,6 +227,8 @@ if (nrow(tau_at_threshold)>0)
 }
 ```
 
+
+
 ```{r, echo=T, message=F, warning=F, eval=T}
 input_data=BF.PP.gene
 colnames(input_data)[3]="post_prob"
@@ -378,6 +380,59 @@ ggplot(summary, aes(x=var.group, y=estimate, fill=var.group)) +
 #dev.off()
 ```
 
+
+#### hyper parameters sensitivity 
+
+```{r, echo=F, message=F, warning=F, eval=F}
+# recover input data to run MIRAGE 
+load("C:\\han\\Dataset\\SCHEMA\\MIRAGE_on_meta_sample_estimate_delta_2vargroups_for_constraint_gene_20231120.RData")
+input1=do.call(rbind.data.frame, BF.all) 
+input=input1[,1:5]
+n1=24248; n2=97322 
+gamma_bar=c(2,3,4,5)
+parameter_estimate=matrix(nrow=length(gamma_bar), ncol=3)
+parameter_estimate_pvalue=matrix(nrow=length(gamma_bar), ncol=3)
+
+for (i in 1:length(gamma_bar))
+{
+cat(i, "th parameter is running", "\n")
+res=mirage(input, n1, n2, gamma=c(gamma_bar[i],1))
+parameter_estimate[i,]=c(res$delta.est, res$eta.est)
+parameter_estimate_pvalue[i,]=c(res$delta.pvalue, res$eta.pvalue)
+}
+```
+
+```{r, echo=F, message=F, warning=F}
+library(scales)
+parameter_estimate_plot=matrix(nrow=3, ncol=3)
+parameter_estimate_plot[1,]=c(0.4507106, 0.6765941, 0.008126521) # pvalue: 1.035716e-213 8.583023e-217    1
+parameter_estimate_plot[2,]=c(0.4515301, 0.5060380, 0.008264481) # pvalue: 2.074614e-215 1.702703e-218    1
+parameter_estimate_plot[3,]=c(0.4514804, 0.4229823, 0.008357832) # pvalue: 3.107830e-216 2.539093e-219    1
+
+
+rownames(parameter_estimate_plot)=c("gamma_bar=3", "gamma_bar=4", "gamma_bar=5")
+colnames(parameter_estimate_plot)=c("delta", "eta1", "eta2")
+
+data_plot2=data.frame(parameters_estimate=as.vector(parameter_estimate_plot), parameters=rep(c("delta", "eta1", "eta2"), each=3), gamma_bar=rep(c("3", "4", "5"),3))
+
+data_plot= data_plot2 %>%
+  mutate(parameters = recode_factor(parameters, `delta` = "delta", `eta1` = "eta[1]", `eta2`="eta[2]"))
+
+point.size=3
+text.size=13
+ggplot(data_plot, aes(x=gamma_bar, y=parameters_estimate, group=parameters))+
+  geom_line(aes(color=parameters), size=1)+
+  geom_point(aes(color=parameters), size=point.size)+
+  xlab(expression(paste(bar(gamma))))+ 
+  ylab("parameter estimate")+
+  ylim(c(0,1))+
+  ggtitle("Sensitivity analysis of hyper parameter")+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, size=text.size))+
+theme(text = element_text(size=text.size))+
+ # theme(legend.position = "none")+
+  scale_colour_discrete(labels = parse_format())
+```
 
 
 

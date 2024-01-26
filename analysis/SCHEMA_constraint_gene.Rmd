@@ -418,20 +418,25 @@ data_plot2=data.frame(parameters_estimate=as.vector(parameter_estimate_plot), pa
 data_plot= data_plot2 %>%
   mutate(parameters = recode_factor(parameters, `delta` = "delta", `eta1` = "eta[1]", `eta2`="eta[2]"))
 
+
+#png("C:\\Users\\hans\\OneDrive - Marquette University\\SCHEMA\\Suppl\\Fig_para_sensitivity.png")
+
 point.size=3
-text.size=13
+text.size=15
 ggplot(data_plot, aes(x=gamma_bar, y=parameters_estimate, group=parameters))+
   geom_line(aes(color=parameters), size=1)+
   geom_point(aes(color=parameters), size=point.size)+
   xlab(expression(paste(bar(gamma))))+ 
-  ylab("parameter estimate")+
+  ylab("Parameter Estimate")+
   ylim(c(0,1))+
-  ggtitle("Sensitivity analysis of hyper parameter")+
+  #ggtitle("Sensitivity analysis of hyper parameter")+
+  labs(title = bquote("Sensitivity of " ~ bar(gamma)))+
   theme_classic()+
   theme(plot.title = element_text(hjust = 0.5, size=text.size))+
 theme(text = element_text(size=text.size))+
  # theme(legend.position = "none")+
   scale_colour_discrete(labels = parse_format())
+#dev.off()
 ```
 
 

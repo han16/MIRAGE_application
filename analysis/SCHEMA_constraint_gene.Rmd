@@ -787,12 +787,13 @@ display_venn(
         # Circles
         lwd = 2,
         lty = 'blank',
-        fill = c("#999999", "#E69F00", "#56B4E9", "#009E73"),
+     #   fill = c("#999999", "#E69F00", "#56B4E9", "#009E73"),
+    fill = c("red", "blue", "green", "yellow"),
         # Numbers
-        cex = .9,
+        cex = 1.2,
         fontface = "italic",
         # Set names
-        cat.cex = 1,
+        cat.cex = 1.2,
         cat.fontface = "bold",
         cat.default.pos = "outer",
        # cat.dist = c(0.055, 0.055, 0.1, 0.1, 0.3 )

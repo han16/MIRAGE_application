@@ -570,12 +570,12 @@ ggvenn(x)+
 ```
 
 
-* overlap with top 33 genes at FDR 5\% 
+* overlap with top 32 genes at FDR 5\% 
 
 
 ```{r, echo=F, message=F, warning=F}
-SCHEMA_top_gene=SCHEMA_gene_results$`Table S5 - Gene Results`$`Gene Symbol`[1:33]
-SCHEMA_top_gene2=SCHEMA_gene_results$`Table S5 - Gene Results`[order(SCHEMA_gene_results$`Table S5 - Gene Results`$`P ca/co (comb)`, decreasing = F),]$`Gene Symbol`[1:33]
+SCHEMA_top_gene=SCHEMA_gene_results$`Table S5 - Gene Results`$`Gene Symbol`[1:32]
+SCHEMA_top_gene2=SCHEMA_gene_results$`Table S5 - Gene Results`[order(SCHEMA_gene_results$`Table S5 - Gene Results`$`P ca/co (comb)`, decreasing = F),]$`Gene Symbol`[1:32]
 library("ggvenn")
 x=list(
   fdr_gene=FDR_gene$Gene,
@@ -605,7 +605,7 @@ ggvenn(x)+
 ```{r, echo=F, message=F, warning=F}
 
 SCHEMA_top_10_gene=SCHEMA_gene_results$`Table S5 - Gene Results`[order(SCHEMA_gene_results$`Table S5 - Gene Results`$`P ca/co (comb)`, decreasing = F),]$`Gene Symbol`[1:10]
-SCHEMA_FDR_gene=SCHEMA_gene_results$`Table S5 - Gene Results`[order(SCHEMA_gene_results$`Table S5 - Gene Results`$`P ca/co (comb)`, decreasing = F),]$`Gene Symbol`[1:33]
+SCHEMA_FDR_gene=SCHEMA_gene_results$`Table S5 - Gene Results`[order(SCHEMA_gene_results$`Table S5 - Gene Results`$`P ca/co (comb)`, decreasing = F),]$`Gene Symbol`[1:32]
 
 X=list(
 SCHEMA_10_Risk_Gene=SCHEMA_top_gene2,
@@ -628,11 +628,11 @@ library("VennDiagram")
 grid.newpage() 
   
 # create Venn diagram with three sets 
-draw.triple.venn(area1=10,area2=110, area3 =33,  
+draw.triple.venn(area1=10,area2=110, area3 =32,  
                  n12=10, n23=22, n13=10, n123=10,  
                  category=c("SCHEMA 10 risk genes","MIRAGE FDR genes","SCHEMA FDR genes"), 
-                 col="Red",fill=c("Green","Yellow","Blue"), lty="dashed", 
-                 cat.cex = 0.8)
+                 col="Red",fill=c("Green","Orange","Blue"), lty="solid", 
+                 cat.cex = 1.3, cat.pos=0, cat.col=c("Green","Orange","Blue"), cex=1.5) # cat.cex  the size of the category names; cex: A vector (length 7) giving the size of the areas' labels; cat.pos: position of category names
 #dev.off()
 ```
 

@@ -275,8 +275,8 @@ x=list(
 
 
 ```{r, echo=F, message=F, warning=F}
-SCHEMA_top_gene=SCHEMA_gene_results$`Table S5 - Gene Results`$`Gene Symbol`[1:33]
-SCHEMA_top_gene2=SCHEMA_gene_results$`Table S5 - Gene Results`[order(SCHEMA_gene_results$`Table S5 - Gene Results`$`P ca/co (comb)`, decreasing = F),]$`Gene Symbol`[1:33]
+SCHEMA_top_gene=SCHEMA_gene_results$`Table S5 - Gene Results`$`Gene Symbol`[1:32]
+SCHEMA_top_gene2=SCHEMA_gene_results$`Table S5 - Gene Results`[order(SCHEMA_gene_results$`Table S5 - Gene Results`$`P ca/co (comb)`, decreasing = F),]$`Gene Symbol`[1:32]
 library("ggvenn")
 x=list(
   fdr_gene=FDR_gene$Gene,
@@ -327,6 +327,9 @@ group_index=numeric()
 group_index[which(meta_data$consequence %in% PTV_definition==T | meta_data$consequence=="missense_variant_mpc_>=3")]=1
 group_index[which(meta_data$consequence=="missense_variant_mpc_2-3")]=2
 meta_data_mirage=data.frame(ID=meta_data$locus, gene=meta_data$hgnc_symbol, No.case=ac_case_actual, No.contr=ac_ctrl_actual, group.index=group_index)
+
+#write.csv(meta_data_mirage, file="C:\\han\\Dataset\\SCHEMA\\MIRAGE_input_2vargroups_for_constraint_gene_20240220.csv") # save the mirage input 
+
 n1=24248; n2=97322 
 res=mirage(meta_data_mirage, n1, n2, gamma=c(3,1))
 
